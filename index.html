@@ -584,7 +584,7 @@ Salahkah bilaku mencintai dirimu`
         ];
       };
 
-      // Load & Play local MP3 directly
+      // Load & Play local MP3 directly with Mobile Browser Compatibility
       const executePlayTrack = (track, shouldAutoplay = true) => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -595,7 +595,7 @@ Salahkah bilaku mencintai dirimu`
 
         const candidates = getCandidatePaths(track);
 
-        const loadAndPlay = (idx) => {
+        const tryPlayCandidate = (idx) => {
           if (idx >= candidates.length) {
             console.warn("Audio file tidak dapat dimuat:", track.title);
             setIsPlaying(false);
@@ -603,33 +603,31 @@ Salahkah bilaku mencintai dirimu`
           }
 
           const target = candidates[idx];
-          isTransitioningRef.current = true;
           audio.src = target;
-          audio.load();
 
           if (shouldAutoplay) {
-            const onCanPlay = () => {
-              audio.removeEventListener('canplay', onCanPlay);
-              audio.play()
+            // Synchronous play invocation preserves mobile user activation token (iOS/Android)
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise
                 .then(() => {
-                  isTransitioningRef.current = false;
                   setIsPlaying(true);
                   setIsPlayerVisible(true);
                 })
                 .catch((err) => {
-                  isTransitioningRef.current = false;
                   if (err && err.name === "AbortError") return;
-                  console.log("Candidate (" + target + ") gagal, mencoba alternatif:", err);
-                  loadAndPlay(idx + 1);
+                  console.warn("Candidate (" + target + ") gagal:", err);
+                  if (idx + 1 < candidates.length) {
+                    tryPlayCandidate(idx + 1);
+                  } else {
+                    setIsPlaying(false);
+                  }
                 });
-            };
-            audio.addEventListener('canplay', onCanPlay);
-          } else {
-            isTransitioningRef.current = false;
+            }
           }
         };
 
-        loadAndPlay(0);
+        tryPlayCandidate(0);
       };
 
       // Initialize audio on mount (preload only, no autoplay)
@@ -817,16 +815,17 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
       const activeTime = isDragging ? dragTime : currentTime;
 
       return (
-        <div className="relative pb-36">
+        <div className="relative pb-44 sm:pb-36">
           
-          {/* Native HTML5 Audio Element with full lifecycle sync */}
+          {/* Native HTML5 Audio Element with mobile optimization */}
           <audio 
             ref={audioRef}
+            playsInline
             onTimeUpdate={handleAudioTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             onPlay={() => setIsPlaying(true)}
             onEnded={handleAudioEnded}
-            preload="auto"
+            preload="metadata"
           />
 
           {/* ================= NAVBAR ================= */}
@@ -1084,26 +1083,26 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
 
-                        {/* Hover Overlay with instant direct play action */}
+                        {/* Play button: easily accessible on mobile, centered on desktop hover */}
                         <div 
                           onClick={() => playSpecificTrack(single)}
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px] cursor-pointer"
+                          className="absolute inset-0 bg-black/20 sm:bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end sm:items-center justify-end sm:justify-center p-3 sm:p-0 cursor-pointer"
                         >
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               playSpecificTrack(single);
                             }}
-                            className="w-14 h-14 rounded-full bg-white text-black hover:scale-110 active:scale-95 shadow-2xl flex items-center justify-center transition-all duration-200"
+                            className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white text-black hover:scale-110 active:scale-95 shadow-xl flex items-center justify-center transition-all duration-200 cursor-pointer"
                             title={isCurrentPlaying ? "Jeda Lagu" : "Putar Lagu"}
                           >
                             {isCurrentPlaying ? (
-                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-black">
+                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6 text-black">
                                 <rect x="6" y="4" width="4" height="16" rx="1.5" />
                                 <rect x="14" y="4" width="4" height="16" rx="1.5" />
                               </svg>
                             ) : (
-                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-black translate-x-[1.5px]">
+                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 sm:w-6 sm:h-6 text-black translate-x-[1px] sm:translate-x-[1.5px]">
                                 <polygon points="6 3 20 12 6 21 6 3" />
                               </svg>
                             )}
@@ -1121,7 +1120,10 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                       </div>
 
                       <div className="space-y-2 mb-4">
-                        <h3 className="font-serif italic font-bold text-2xl text-white group-hover:text-purple-300 transition-colors">
+                        <h3 
+                          onClick={() => playSpecificTrack(single)}
+                          className="font-serif italic font-bold text-2xl text-white group-hover:text-purple-300 transition-colors cursor-pointer"
+                        >
                           {single.title}
                         </h3>
                         <p className="text-xs text-slate-400 line-clamp-2 italic font-serif">
