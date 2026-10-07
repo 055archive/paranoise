@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PARANOISE — Official Band Website & EPK</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+
+  <!-- Meta Tags for SEO & Social Sharing -->
+  <meta name="description" content="Official website and Electronic Press Kit (EPK) of Paranoise, an Alternative Pop band from Indonesia. Stream latest single 'GUGUR' now.">
+  <meta property="og:title" content="PARANOISE — Alternative Pop">
+  <meta property="og:description" content="Listen to singles: Gugur, Anything For You, Memori, and Berharap. Explore press kit & booking information.">
+  <meta property="og:image" content="assets/band-hero.png">
+  
+  <!-- Google Fonts: Cormorant Garamond, Syne & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Syne"', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              black: '#09090d',
+              dark: '#111118',
+              card: '#161622',
+              border: '#28283a',
+              accent: '#d8b4e2',
+              glow: '#8b5cf6',
+              amber: '#f59e0b',
+              muted: '#94a3b8'
+            }
+          },
+          animation: {
+            'spin-slow': 'spin 18s linear infinite',
+            'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 5s ease-in-out infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- React 18 & Babel Standalone for Instant In-Browser Execution -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom Film Grain Overlay */
+    .film-grain {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #28283a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #474762;
+    }
+
+    /* Glassmorphism helpers */
+    .glass-panel {
+      background: rgba(18, 18, 26, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(22, 22, 34, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .glass-card:hover {
+      border-color: rgba(216, 180, 226, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-brand-black text-slate-100 font-sans selection:bg-purple-900 selection:text-white relative min-h-screen overflow-x-hidden">
+
+  <!-- Atmospheric Background Glow Elements -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-32 left-1/4 w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[140px]"></div>
+    <div class="absolute top-1/3 -right-32 w-[550px] h-[550px] bg-indigo-900/15 rounded-full blur-[150px]"></div>
+    <div class="absolute bottom-10 left-10 w-[500px] h-[500px] bg-amber-950/15 rounded-full blur-[130px]"></div>
+    <div class="absolute inset-0 film-grain"></div>
+  </div>
+
+  <div id="root" class="relative z-10"></div>
+
+  <!-- React Application Logic -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- DATA STORE ---
+    const BAND_INFO = {
+      name: "PARANOISE",
+      tagline: "Alternative Pop band capturing melancholia, youthful longing, and bittersweet memories.",
+      genre: "Alternative Pop",
+      origin: "Indonesia",
+      activeSince: "2024",
+      whatsapp: "089525237683",
+      whatsappLink: "https://wa.me/6289525237683?text=Halo%20Management%20Paranoise,%20kami%20tertarik%20untuk%20menghubungi%20Paranoise%20untuk%20kerjasama%20acara%20/%20media.",
+      email: "paranoisemusic696@gmail.com",
+      instagram: "prnois",
+      instagramLink: "https://instagram.com/prnois",
+      spotifyUrl: "https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3",
+      spotifyId: "6pD26dt90NPyn282mBqcA3"
+    };
+
+    const SINGLES_DATA = [
+      {
+        id: "gugur",
+        title: "GUGUR",
+        year: "2026",
+        isLatest: true,
+        cover: "assets/gugur.jpg",
+        spotifyUrl: "https://open.spotify.com/album/4cXbqcvnCMWhPZiElKeclF",
+        spotifyTrackId: "6Pb4u27upPP6APMNXynEMA",
+        duration: "03:42",
+        lyricsSnippet: "Terhempas perlahan bersama waktu yang berlalu, gugur setiap asa namun menyisakan jejak yang abadi.",
+        fullLyrics: `GUGUR — Paranoise (2026)
+
+[Verse 1]
+Angin berbisik lirih menyapa malam
+Bayangmu memudar di sudut ruang yang kelam
+Semua yang terucap kini meredup perlahan
+Tinggalkan rindu di batas kepasrahan
+
+[Chorus]
+Biar gugur semua asa yang pernah ada
+Bersama hujan yang menghapus jejak kita
+Jika melepaskan adalah jalan cerita
+Kurelakan hatiku tenang dalam jeda
+
+[Outro]
+Gugur... dalam hening...
+Sampai kita lupa rasa sakit yang tinggal.`,
+        soundTone: { root: 220, type: "sawtooth", mood: "melancholic dreamy" }
+      },
+      {
+        id: "anything-for-you",
+        title: "Anything For You",
+        year: "2026",
+        isLatest: false,
+        cover: "assets/anything-for-you.jpg",
+        spotifyUrl: "https://open.spotify.com/album/5Fo1XRwyqxEeuPfjxoUVP5",
+        spotifyTrackId: "anything-for-you",
+        duration: "03:18",
+        lyricsSnippet: "I’d cross the darkest oceans and turn the sky around, just to keep your heart alive.",
+        fullLyrics: `Anything For You — Paranoise (2026)
+
+[Verse 1]
+Late night calls, driving down the empty streets
+Hearing your voice makes my lonely heart skip beats
+Even when the world feels too loud to bear
+Just know that whenever you call, I’m right there
+
+[Chorus]
+I would do anything for you, darling
+Carry your shadows when the stars stop shining
+No matter the distance, no matter the view
+I’ll give everything... anything for you.`,
+        soundTone: { root: 261.63, type: "sine", mood: "warm romantic" }
+      },
+      {
+        id: "memori",
+        title: "Memori",
+        year: "2025",
+        isLatest: false,
+        cover: "assets/memori.jpg",
+        spotifyUrl: "https://open.spotify.com/album/72bhlblYdjd9QOCY7Ttu88",
+        spotifyTrackId: "memori",
+        duration: "03:55",
+        lyricsSnippet: "Tersimpan rapi dalam lipatan masa lalu, setiap tawa dan tangis yang pernah kita tuju.",
+        fullLyrics: `Memori — Paranoise (2025)
+
+[Verse 1]
+Membuka album lama yang penuh debu
+Tatap mata itu yang kini bukan milikku
+Betapa cepat waktu merubah segalanya
+Dari kita yang tak terpisahkan, kini jadi cerita
+
+[Chorus]
+Memori itu tak pernah benar-benar hilang
+Ia datang saat senja perlahan menghilang
+Menghangatkan dingin yang tak bersuara
+Tentang kita di masa paling berharga.`,
+        soundTone: { root: 196.00, type: "triangle", mood: "nostalgic retro" }
+      },
+      {
+        id: "berharap",
+        title: "Berharap",
+        year: "2024",
+        isLatest: false,
+        cover: "assets/berharap.jpg",
+        spotifyUrl: "https://open.spotify.com/album/0mH2WL1S7LxAahTvl54blv",
+        spotifyTrackId: "1u6gvMLTV2lHITJz1iVJtC",
+        duration: "04:12",
+        lyricsSnippet: "Masih di sini menggenggam sisa asa, meski tahu kau telah melangkah tanpa rasa.",
+        fullLyrics: `Berharap — Paranoise (2024)
+
+[Verse 1]
+Langkah kaki terhenti di persimpangan
+Menatap langit mendung tanpa kepastian
+Haruskah kupertahankan rasa yang menyiksa
+Atau kubiarkan menguap bersama udara?
+
+[Chorus]
+Ku masih berharap kau akan menoleh
+Melihat hati yang tak pernah lelah memilih
+Walau pada akhirnya aku mengerti
+Berharap padamu adalah luka yang kucari sendiri.`,
+        soundTone: { root: 174.61, type: "sine", mood: "emotional longing" }
+      }
+    ];
+
+    const GALLERY_ITEMS = [
+      {
+        id: "perf-1",
+        src: "assets/gallery-1.jpg",
+        title: "Stage Persona",
+        tag: "Live Performance",
+        desc: "Gitaris Paranoise dengan stiker khas 'I ❤️ My Jellia' di bawah sorotan lampu panggung biru dingin."
+      },
+      {
+        id: "perf-2",
+        src: "assets/gallery-2.jpg",
+        title: "Drummer In Motion",
+        tag: "Live Energy",
+        desc: "Sudut pandang fisheye dinamis merekam dentuman ritme dan intensitas panggung."
+      },
+      {
+        id: "perf-3",
+        src: "assets/gallery-3.jpg",
+        title: "Sing-Along Crowd",
+        tag: "Live Gig",
+        desc: "Koneksi magis saat penonton bersuara bersama di panggung Bewara Seni."
+      },
+      {
+        id: "perf-4",
+        src: "assets/gallery-4.jpg",
+        title: "Synth & Atmosphere",
+        tag: "Stage Mood",
+        desc: "Membangun lapisan suara dreamy dan ambient synth di setiap aransemen."
+      },
+      {
+        id: "perf-5",
+        src: "assets/gallery-5.jpg",
+        title: "Dual Exposure Riffs",
+        tag: "Visual Art",
+        desc: "Harmoni petikan gitar dan pencahayaan panggung ganda bernuansa hangat dan neon."
+      },
+      {
+        id: "band-main",
+        src: "assets/band-hero.png",
+        title: "The Collective",
+        tag: "Band Photoshoot",
+        desc: "Potret formasi Paranoise bernuansa analog night-flash khas skena alternative pop."
+      }
+    ];
+
+    // --- SYNTHESIZED AMBIENT AUDIO ENGINE (Web Audio API) ---
+    // Memberikan preview suara dreamy musik alt-pop langsung di browser tanpa butuh hosting audio eksternal!
+    class AmbientAudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.isPlaying = false;
+        this.currentOscs = [];
+        this.gainNode = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+          this.gainNode = this.ctx.createGain();
+          this.gainNode.gain.setValueAtTime(0.12, this.ctx.currentTime);
+          this.gainNode.connect(this.ctx.destination);
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTrack(track) {
+        this.init();
+        this.stop();
+
+        const baseFreq = track.soundTone ? track.soundTone.root : 220;
+        // Akor Dreamy Alt-Pop: Root, Minor 3rd/Major 3rd, 5th, Major 7th
+        const chordMultipliers = [1, 1.1892, 1.4983, 1.8877];
+
+        const now = this.ctx.currentTime;
+        const subGain = this.ctx.createGain();
+        subGain.gain.setValueAtTime(0.001, now);
+        subGain.gain.exponentialRampToValueAtTime(0.08, now + 1.2);
+        subGain.connect(this.gainNode);
+
+        chordMultipliers.forEach((mult, index) => {
+          const osc = this.ctx.createOscillator();
+          const filter = this.ctx.createBiquadFilter();
+
+          osc.type = index % 2 === 0 ? "sine" : "triangle";
+          osc.frequency.setValueAtTime(baseFreq * mult, now);
+
+          // Subtle chorus/detune for that nostalgic dreamy warmth
+          osc.detune.setValueAtTime((index - 1.5) * 6, now);
+
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(800 + (index * 200), now);
+
+          osc.connect(filter);
+          filter.connect(subGain);
+          osc.start(now);
+          this.currentOscs.push(osc);
+        });
+
+        this.currentSubGain = subGain;
+        this.isPlaying = true;
+      }
+
+      stop() {
+        if (this.ctx && this.currentOscs.length > 0) {
+          const now = this.ctx.currentTime;
+          if (this.currentSubGain) {
+            this.currentSubGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+          }
+          setTimeout(() => {
+            this.currentOscs.forEach(o => {
+              try { o.stop(); o.disconnect(); } catch (e) {}
+            });
+            this.currentOscs = [];
+          }, 850);
+        }
+        this.isPlaying = false;
+      }
+
+      setVolume(vol) {
+        if (this.gainNode && this.ctx) {
+          this.gainNode.gain.setValueAtTime(vol * 0.18, this.ctx.currentTime);
+        }
+      }
+    }
+
+    const audioEngine = new AmbientAudioEngine();
+
+    // --- MAIN REACT APPLICATION ---
+    function ParanoiseApp() {
+      const [currentTrack, setCurrentTrack] = useState(SINGLES_DATA[0]);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const [playbackProgress, setPlaybackProgress] = useState(0);
+      const [volume, setVolume] = useState(0.7);
+      const [isMuted, setIsMuted] = useState(false);
+      const [selectedLyrics, setSelectedLyrics] = useState(null);
+      const [lightboxImage, setLightboxImage] = useState(null);
+      const [spotifyModalAlbum, setSpotifyModalAlbum] = useState(null);
+      const [epkCopied, setEpkCopied] = useState(false);
+      const [navScrolled, setNavScrolled] = useState(false);
+
+      // Scroll detector for Navbar
+      useEffect(() => {
+        const handleScroll = () => {
+          if (window.scrollY > 50) {
+            setNavScrolled(true);
+          } else {
+            setNavScrolled(false);
+          }
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+      }, []);
+
+      // Lucide icons re-run
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+
+      // Playback progress ticker
+      useEffect(() => {
+        let interval = null;
+        if (isPlaying) {
+          interval = setInterval(() => {
+            setPlaybackProgress(prev => {
+              if (prev >= 100) {
+                // Next track or loop
+                return 0;
+              }
+              return prev + 0.5;
+            });
+          }, 500);
+        } else {
+          clearInterval(interval);
+        }
+        return () => clearInterval(interval);
+      }, [isPlaying]);
+
+      // Audio Control
+      const togglePlay = (trackToPlay = null) => {
+        const target = trackToPlay || currentTrack;
+        if (isPlaying && (!trackToPlay || trackToPlay.id === currentTrack.id)) {
+          audioEngine.stop();
+          setIsPlaying(false);
+        } else {
+          setCurrentTrack(target);
+          audioEngine.playTrack(target);
+          setIsPlaying(true);
+          setPlaybackProgress(0);
+        }
+      };
+
+      const handleVolumeChange = (newVol) => {
+        setVolume(newVol);
+        if (isMuted) setIsMuted(false);
+        audioEngine.setVolume(newVol);
+      };
+
+      const toggleMute = () => {
+        if (isMuted) {
+          audioEngine.setVolume(volume);
+          setIsMuted(false);
+        } else {
+          audioEngine.setVolume(0);
+          setIsMuted(true);
+        }
+      };
+
+      const copyEPKInfo = () => {
+        const epkSummary = `PARANOISE — Alternative Pop Band
+Origin: Indonesia
+Singles:
+1. GUGUR (2026)
+2. Anything For You (2026)
+3. Memori (2025)
+4. Berharap (2024)
+
+Booking / Contact Person:
+WhatsApp: 089525237683
+Email: paranoisemusic696@gmail.com
+Instagram: @prnois
+Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
+
+        navigator.clipboard.writeText(epkSummary);
+        setEpkCopied(true);
+        setTimeout(() => setEpkCopied(false), 3000);
+      };
+
+      return (
+        <div className="relative pb-32">
+          
+          {/* ================= NAVIGATION BAR ================= */}
+          <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            navScrolled ? "glass-panel py-3 shadow-2xl border-b border-white/10" : "bg-transparent py-5"
+          }`}>
+            <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+              
+              {/* Brand Logo & Name */}
+              <a href="#hero" className="flex items-center gap-3 group">
+                <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 group-hover:border-purple-400/80 transition-all shadow-md">
+                  <img src="assets/logo.png" alt="Paranoise Logo" className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <span className="font-display font-bold text-lg tracking-wider text-white group-hover:text-purple-300 transition-colors">
+                    PARANOISE
+                  </span>
+                  <span className="hidden sm:inline-block ml-2 text-xs font-mono text-purple-400/80 uppercase tracking-widest px-2 py-0.5 rounded bg-purple-950/50 border border-purple-800/40">
+                    Alt Pop
+                  </span>
+                </div>
+              </a>
+
+              {/* Navigation Links */}
+              <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="#hero" className="hover:text-purple-300 transition-colors">Latest</a>
+                <a href="#discography" className="hover:text-purple-300 transition-colors">Discography</a>
+                <a href="#gallery" className="hover:text-purple-300 transition-colors">Visuals</a>
+                <a href="#epk" className="hover:text-purple-300 transition-colors">EPK & Booking</a>
+              </div>
+
+              {/* Quick Actions (Spotify & Social) */}
+              <div className="flex items-center gap-3">
+                <a 
+                  href={BAND_INFO.spotifyUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold tracking-wide transition-all shadow-sm hover:scale-105"
+                >
+                  <i data-lucide="music" className="w-3.5 h-3.5"></i>
+                  <span>Spotify</span>
+                </a>
+                <a 
+                  href={BAND_INFO.instagramLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-full glass-card hover:text-pink-400 text-slate-400 transition-colors"
+                  title="Instagram @prnois"
+                >
+                  <i data-lucide="instagram" className="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+          </nav>
+
+          {/* ================= HERO SECTION (SPOTLIGHT: GUGUR) ================= */}
+          <section id="hero" className="min-h-screen pt-28 pb-16 flex items-center justify-center relative overflow-hidden px-6">
+            
+            {/* Background Band Photo Texture with Dark Moody Vignette */}
+            <div className="absolute inset-0 pointer-events-none opacity-20 filter grayscale contrast-125 mix-blend-luminosity">
+              <img src="assets/band-hero.png" alt="Paranoise Band Background" className="w-full h-full object-cover object-center" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/90 to-brand-black/60"></div>
+            </div>
+
+            <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+              
+              {/* Left Column: Headline & Release Info */}
+              <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+                
+                {/* Release Tag */}
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full glass-card border-purple-500/30 text-purple-300 text-xs font-semibold tracking-widest uppercase">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span>NEW RELEASE • 2026</span>
+                </div>
+
+                {/* Main Song Title */}
+                <div className="space-y-2">
+                  <h1 className="font-serif italic font-bold text-6xl sm:text-7xl lg:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-purple-300 tracking-tight leading-none">
+                    GUGUR
+                  </h1>
+                  <p className="font-display font-medium text-slate-400 tracking-widest text-sm uppercase">
+                    The 4th Single by <span className="text-white font-semibold">Paranoise</span>
+                  </p>
+                </div>
+
+                {/* Lyrics Hook Snippet */}
+                <blockquote className="border-l-2 border-purple-500/40 pl-4 py-1 text-slate-300 italic font-serif text-lg sm:text-xl max-w-xl mx-auto lg:mx-0 bg-purple-950/10 rounded-r-lg">
+                  "{SINGLES_DATA[0].lyricsSnippet}"
+                </blockquote>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+                  {/* Play Interactive Button */}
+                  <button 
+                    onClick={() => togglePlay(SINGLES_DATA[0])}
+                    className="flex items-center gap-3 px-6 py-3.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium text-sm shadow-xl shadow-purple-950/50 hover:shadow-purple-700/30 transition-all hover:scale-105"
+                  >
+                    <i data-lucide={isPlaying && currentTrack.id === "gugur" ? "pause" : "play"} className="w-4 h-4 fill-current"></i>
+                    <span>{isPlaying && currentTrack.id === "gugur" ? "Pause Dream Preview" : "Play Web Preview"}</span>
+                  </button>
+
+                  {/* Open in Spotify */}
+                  <a 
+                    href={SINGLES_DATA[0].spotifyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-5 py-3.5 rounded-full glass-card hover:bg-white/10 text-slate-200 text-sm font-medium transition-all hover:scale-105"
+                  >
+                    <i data-lucide="external-link" className="w-4 h-4 text-emerald-400"></i>
+                    <span>Stream on Spotify</span>
+                  </a>
+
+                  {/* View Lyrics Button */}
+                  <button 
+                    onClick={() => setSelectedLyrics(SINGLES_DATA[0])}
+                    className="flex items-center gap-2 px-4 py-3.5 rounded-full glass-card hover:bg-white/10 text-slate-300 text-sm font-medium transition-all"
+                  >
+                    <i data-lucide="file-text" className="w-4 h-4 text-purple-400"></i>
+                    <span>Read Lyrics</span>
+                  </button>
+                </div>
+
+                {/* Quick stats / metadata */}
+                <div className="pt-6 border-t border-white/5 flex flex-wrap items-center justify-center lg:justify-start gap-8 text-xs text-slate-400 font-mono">
+                  <div>GENRE: <span className="text-slate-200">Alternative Pop</span></div>
+                  <div>RELEASE: <span className="text-slate-200">August 2026</span></div>
+                  <div>FORMAT: <span className="text-slate-200">Digital Single</span></div>
+                </div>
+              </div>
+
+              {/* Right Column: Vinyl / Artwork Display */}
+              <div className="lg:col-span-5 flex justify-center">
+                <div className="relative group max-w-sm w-full">
+                  
+                  {/* Subtle ambient lighting behind vinyl */}
+                  <div className="absolute inset-0 bg-purple-600/25 rounded-2xl blur-3xl group-hover:bg-purple-600/40 transition-all duration-700"></div>
+
+                  {/* Vinyl Record Disc (Pops out on hover or when playing) */}
+                  <div className={`absolute top-0 right-0 w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-neutral-950 border-4 border-neutral-800 shadow-2xl flex items-center justify-center transition-all duration-700 pointer-events-none ${
+                    isPlaying && currentTrack.id === "gugur" 
+                      ? "translate-x-16 sm:translate-x-20 rotate-45 animate-spin-slow" 
+                      : "group-hover:translate-x-12 group-hover:rotate-12"
+                  }`}>
+                    {/* Vinyl Grooves */}
+                    <div className="w-48 h-48 rounded-full border border-neutral-800 flex items-center justify-center">
+                      <div className="w-32 h-32 rounded-full border border-neutral-800/80 flex items-center justify-center">
+                        {/* Center Vinyl Label */}
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-900 to-indigo-900 p-1 flex items-center justify-center text-center">
+                          <img src="assets/logo.png" alt="Paranoise Mini" className="w-12 h-12 rounded-full object-cover" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Album Cover Art Card */}
+                  <div className="relative z-10 rounded-2xl overflow-hidden glass-card p-3 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2">
+                    <div className="relative aspect-square rounded-xl overflow-hidden shadow-inner bg-brand-dark">
+                      <img 
+                        src="assets/gugur.jpg" 
+                        alt="Gugur Single Cover Art" 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-5">
+                        <div>
+                          <p className="text-xs uppercase tracking-widest text-purple-300 font-mono">Single</p>
+                          <h3 className="font-serif italic font-bold text-2xl text-white">GUGUR</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Scroll Indicator */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-xs tracking-widest uppercase">
+              <span>Scroll to Explore</span>
+              <i data-lucide="chevron-down" className="w-4 h-4 animate-bounce text-purple-400"></i>
+            </div>
+          </section>
+
+          {/* ================= DISCOGRAPHY SECTION (4 SINGLES) ================= */}
+          <section id="discography" className="py-28 px-6 relative">
+            <div className="max-w-7xl mx-auto">
+              
+              {/* Section Header */}
+              <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+                <p className="text-xs font-mono uppercase tracking-widest text-purple-400">Chronological Releases</p>
+                <h2 className="font-serif italic text-4xl sm:text-5xl font-bold text-white">
+                  The Discography
+                </h2>
+                <p className="text-slate-400 text-sm">
+                  Four chapters of emotions, memories, and introspective soundscapes by Paranoise.
+                </p>
+              </div>
+
+              {/* Singles Grid (4 Tracks) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {SINGLES_DATA.map((single) => {
+                  const isCurrent = currentTrack.id === single.id;
+                  const isCurrentPlaying = isCurrent && isPlaying;
+
+                  return (
+                    <div 
+                      key={single.id}
+                      className={`glass-card rounded-2xl p-4 transition-all duration-300 flex flex-col justify-between group hover:-translate-y-2 relative overflow-hidden ${
+                        isCurrent ? "ring-2 ring-purple-500/50 shadow-xl shadow-purple-950/40" : ""
+                      }`}
+                    >
+                      {/* Top Badges */}
+                      <div className="flex items-center justify-between mb-3 text-xs font-mono">
+                        <span className="text-slate-400">{single.year}</span>
+                        {single.isLatest && (
+                          <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold text-[10px] uppercase">
+                            Latest
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Cover Artwork Container */}
+                      <div className="relative aspect-square rounded-xl overflow-hidden mb-4 bg-black/60 shadow-md">
+                        <img 
+                          src={single.cover} 
+                          alt={`${single.title} Cover`}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          onError={(e) => {
+                            e.target.src = "assets/logo.png";
+                          }}
+                        />
+
+                        {/* Hover Overlay with Instant Play */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-sm">
+                          <button
+                            onClick={() => togglePlay(single)}
+                            className="p-3.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white shadow-xl hover:scale-110 transition-transform"
+                            title="Play Preview"
+                          >
+                            <i data-lucide={isCurrentPlaying ? "pause" : "play"} className="w-5 h-5 fill-current"></i>
+                          </button>
+                          <a
+                            href={single.spotifyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl hover:scale-110 transition-transform"
+                            title="Open on Spotify"
+                          >
+                            <i data-lucide="music" className="w-5 h-5"></i>
+                          </a>
+                        </div>
+
+                        {/* Playing Waveform Badge */}
+                        {isCurrentPlaying && (
+                          <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md flex items-center gap-1.5 text-[11px] text-purple-300">
+                            <span className="w-1.5 h-3 bg-purple-400 animate-pulse rounded"></span>
+                            <span className="w-1.5 h-4 bg-purple-400 animate-pulse delay-75 rounded"></span>
+                            <span className="w-1.5 h-2 bg-purple-400 animate-pulse delay-150 rounded"></span>
+                            <span className="ml-1 font-mono">Playing</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Song Details */}
+                      <div className="space-y-2 mb-4">
+                        <h3 className="font-serif italic font-bold text-2xl text-white group-hover:text-purple-300 transition-colors">
+                          {single.title}
+                        </h3>
+                        <p className="text-xs text-slate-400 line-clamp-2 italic font-serif">
+                          "{single.lyricsSnippet}"
+                        </p>
+                      </div>
+
+                      {/* Card Footer Actions */}
+                      <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
+                        <button
+                          onClick={() => setSelectedLyrics(single)}
+                          className="text-purple-300 hover:text-purple-200 flex items-center gap-1 transition-colors font-medium"
+                        >
+                          <i data-lucide="file-text" className="w-3.5 h-3.5"></i>
+                          <span>Lirik</span>
+                        </button>
+                        
+                        <a
+                          href={single.spotifyUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-mono transition-colors"
+                        >
+                          <span>Spotify</span>
+                          <i data-lucide="external-link" className="w-3 h-3"></i>
+                        </a>
+                      </div>
+
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Spotify Player Direct Access Banner */}
+              <div className="mt-14 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-500/20 bg-gradient-to-r from-emerald-950/20 via-brand-dark to-purple-950/20">
+                <div className="flex items-center gap-4 text-center md:text-left">
+                  <div className="p-4 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                    <i data-lucide="headphones" className="w-7 h-7"></i>
+                  </div>
+                  <div>
+                    <h4 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                      Stream Paranoise on All Major Platforms
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-400">
+                      Tersedia di Spotify, Apple Music, YouTube Music, dan platform streaming favoritmu.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <a
+                    href={BAND_INFO.spotifyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs tracking-wider uppercase transition-all shadow-lg shadow-emerald-950/50 hover:scale-105"
+                  >
+                    Buka Spotify Artist Profile
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          {/* ================= VISUAL ARCHIVE / GALLERY SECTION ================= */}
+          <section id="gallery" className="py-28 px-6 bg-brand-dark/50 border-y border-white/5 relative">
+            <div className="max-w-7xl mx-auto">
+              
+              {/* Section Header */}
+              <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+                <p className="text-xs font-mono uppercase tracking-widest text-purple-400">Visual Archive</p>
+                <h2 className="font-serif italic text-4xl sm:text-5xl font-bold text-white">
+                  Moments & Stage Atmosphere
+                </h2>
+                <p className="text-slate-400 text-sm">
+                  Kumpulan potret panggung, energi riil penonton, dan kilas balik estetika visual Paranoise.
+                </p>
+              </div>
+
+              {/* Asymmetric Gallery Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {GALLERY_ITEMS.map((item, idx) => (
+                  <div 
+                    key={item.id}
+                    onClick={() => setLightboxImage(item)}
+                    className="glass-card rounded-2xl overflow-hidden cursor-pointer group hover:-translate-y-1.5 transition-all duration-300 relative"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden bg-brand-black">
+                      <img 
+                        src={item.src} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:brightness-105"
+                      />
+                      
+                      {/* Gradient Vignette & Info */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                      
+                      {/* Top Tag */}
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono text-purple-300 border border-white/10">
+                          {item.tag}
+                        </span>
+                      </div>
+
+                      {/* Bottom Info Preview */}
+                      <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                        <div>
+                          <h4 className="font-serif italic text-xl font-bold text-white group-hover:text-purple-300 transition-colors">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-slate-300 line-clamp-1">
+                            {item.desc}
+                          </p>
+                        </div>
+                        <div className="p-2 rounded-full glass-card text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                          <i data-lucide="maximize-2" className="w-4 h-4"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </section>
+
+          {/* ================= ELECTRONIC PRESS KIT (EPK) & BOOKING HUB ================= */}
+          <section id="epk" className="py-28 px-6 relative">
+            <div className="max-w-6xl mx-auto">
+              
+              <div className="glass-panel rounded-3xl p-8 sm:p-12 lg:p-16 border border-purple-500/20 shadow-2xl relative overflow-hidden">
+                
+                {/* Decorative background glow */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                  
+                  {/* Left Column: EPK Overview */}
+                  <div className="lg:col-span-7 space-y-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-mono uppercase tracking-widest border border-purple-500/30">
+                      <i data-lucide="briefcase" className="w-3.5 h-3.5"></i>
+                      <span>Electronic Press Kit & Inquiries</span>
+                    </div>
+
+                    <h2 className="font-serif italic text-4xl sm:text-5xl font-bold text-white leading-tight">
+                      Book Paranoise for Your Stage
+                    </h2>
+
+                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+                      Siap membawa atmosfer *alternative pop* dengan perpaduan melodi dreamy, lirik emosional, dan dinamika panggung yang hidup ke festival musik, gigs kampus, showcase, atau acara kreatif Anda.
+                    </p>
+
+                    {/* Band Specifications List */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10 text-xs">
+                      <div>
+                        <span className="block text-slate-500 font-mono">GENRE</span>
+                        <span className="text-white font-medium text-sm">Alternative Pop</span>
+                      </div>
+                      <div>
+                        <span className="block text-slate-500 font-mono">FORMAT</span>
+                        <span className="text-white font-medium text-sm">Full Band Live Set</span>
+                      </div>
+                      <div>
+                        <span className="block text-slate-500 font-mono">DISCOGRAPHY</span>
+                        <span className="text-white font-medium text-sm">4 Original Singles</span>
+                      </div>
+                    </div>
+
+                    {/* EPK Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-4 pt-4">
+                      <button
+                        onClick={copyEPKInfo}
+                        className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-white text-brand-black hover:bg-slate-200 font-semibold text-xs tracking-wider uppercase transition-all shadow-lg hover:scale-105"
+                      >
+                        <i data-lucide={epkCopied ? "check" : "copy"} className="w-4 h-4 text-purple-700"></i>
+                        <span>{epkCopied ? "EPK Data Copied!" : "Salin Info Press Kit"}</span>
+                      </button>
+
+                      <a
+                        href={BAND_INFO.whatsappLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wider uppercase transition-all shadow-lg hover:scale-105"
+                      >
+                        <i data-lucide="message-circle" className="w-4 h-4"></i>
+                        <span>Chat WhatsApp Manager</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Direct Contact Cards */}
+                  <div className="lg:col-span-5 space-y-4">
+                    
+                    {/* Contact Card: WhatsApp */}
+                    <a 
+                      href={BAND_INFO.whatsappLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-emerald-500/40 transition-all group block"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <i data-lucide="phone" className="w-5 h-5"></i>
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-xs text-slate-400 font-mono">WhatsApp Booking</p>
+                        <p className="text-sm sm:text-base font-semibold text-white truncate group-hover:text-emerald-300 transition-colors">
+                          {BAND_INFO.whatsapp}
+                        </p>
+                      </div>
+                    </a>
+
+                    {/* Contact Card: Email */}
+                    <a 
+                      href={`mailto:${BAND_INFO.email}?subject=Booking%20Inquiry%20-%20Paranoise`}
+                      className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-purple-500/40 transition-all group block"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <i data-lucide="mail" className="w-5 h-5"></i>
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-xs text-slate-400 font-mono">Official Email</p>
+                        <p className="text-sm sm:text-base font-semibold text-white truncate group-hover:text-purple-300 transition-colors">
+                          {BAND_INFO.email}
+                        </p>
+                      </div>
+                    </a>
+
+                    {/* Contact Card: Instagram */}
+                    <a 
+                      href={BAND_INFO.instagramLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-pink-500/40 transition-all group block"
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <i data-lucide="instagram" className="w-5 h-5"></i>
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-xs text-slate-400 font-mono">Instagram</p>
+                        <p className="text-sm sm:text-base font-semibold text-white truncate group-hover:text-pink-300 transition-colors">
+                          @{BAND_INFO.instagram}
+                        </p>
+                      </div>
+                    </a>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </section>
+
+          {/* ================= FOOTER ================= */}
+          <footer className="border-t border-white/5 py-12 px-6 text-center text-xs text-slate-500">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+              
+              <div className="flex items-center gap-3">
+                <img src="assets/logo.png" alt="Paranoise Logo" className="w-7 h-7 rounded-full object-cover" />
+                <span className="font-display font-semibold text-slate-300 tracking-wider">PARANOISE</span>
+                <span>• Alternative Pop</span>
+              </div>
+
+              <div>
+                © {new Date().getFullYear()} Paranoise. All Rights Reserved. Crafted with atmospheric vibes.
+              </div>
+
+              <div className="flex items-center gap-4">
+                <a href={BAND_INFO.spotifyUrl} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition-colors">Spotify</a>
+                <a href={BAND_INFO.instagramLink} target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">Instagram</a>
+                <a href={`mailto:${BAND_INFO.email}`} className="hover:text-purple-400 transition-colors">Email</a>
+              </div>
+
+            </div>
+          </footer>
+
+          {/* ================= PERSISTENT FLOATING AUDIO PLAYER ================= */}
+          <div className="fixed bottom-4 left-4 right-4 sm:left-6 sm:right-6 max-w-4xl mx-auto z-50">
+            <div className="glass-panel rounded-2xl p-3 sm:p-4 shadow-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+              
+              {/* Left: Current Track Thumbnail & Metadata */}
+              <div className="flex items-center gap-3.5 w-full sm:w-auto">
+                <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black">
+                  <img src={currentTrack.cover} alt={currentTrack.title} className="w-full h-full object-cover" />
+                  {isPlaying && (
+                    <div className="absolute inset-0 bg-purple-950/40 backdrop-blur-[1px] flex items-center justify-center">
+                      <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-serif italic font-bold text-white text-base truncate">
+                      {currentTrack.title}
+                    </p>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-900/60 text-purple-300">
+                      {currentTrack.year}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 truncate">
+                    Paranoise • {isPlaying ? "Ambient Web Audio" : "Ready to play"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Center: Controls & Fake Audio Scrubber */}
+              <div className="flex flex-col items-center gap-1.5 w-full sm:w-80">
+                <div className="flex items-center gap-4">
+                  {/* Prev Track */}
+                  <button
+                    onClick={() => {
+                      const curIndex = SINGLES_DATA.findIndex(s => s.id === currentTrack.id);
+                      const prevIndex = (curIndex - 1 + SINGLES_DATA.length) % SINGLES_DATA.length;
+                      togglePlay(SINGLES_DATA[prevIndex]);
+                    }}
+                    className="text-slate-400 hover:text-white transition-colors"
+                    title="Previous Single"
+                  >
+                    <i data-lucide="skip-back" className="w-4 h-4"></i>
+                  </button>
+
+                  {/* Play / Pause */}
+                  <button
+                    onClick={() => togglePlay()}
+                    className="p-2.5 rounded-full bg-white hover:bg-slate-200 text-brand-black transition-all hover:scale-105 shadow-md"
+                    title={isPlaying ? "Pause" : "Play"}
+                  >
+                    <i data-lucide={isPlaying ? "pause" : "play"} className="w-4 h-4 fill-current"></i>
+                  </button>
+
+                  {/* Next Track */}
+                  <button
+                    onClick={() => {
+                      const curIndex = SINGLES_DATA.findIndex(s => s.id === currentTrack.id);
+                      const nextIndex = (curIndex + 1) % SINGLES_DATA.length;
+                      togglePlay(SINGLES_DATA[nextIndex]);
+                    }}
+                    className="text-slate-400 hover:text-white transition-colors"
+                    title="Next Single"
+                  >
+                    <i data-lucide="skip-forward" className="w-4 h-4"></i>
+                  </button>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full flex items-center gap-2 text-[10px] font-mono text-slate-400">
+                  <span>0:{(Math.floor(playbackProgress * 0.3)).toString().padStart(2, '0')}</span>
+                  <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-indigo-400 transition-all duration-300" 
+                      style={{ width: `${playbackProgress}%` }}
+                    ></div>
+                  </div>
+                  <span>{currentTrack.duration}</span>
+                </div>
+              </div>
+
+              {/* Right: Volume & Spotify Direct */}
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                {/* Volume Button */}
+                <button 
+                  onClick={toggleMute}
+                  className="text-slate-400 hover:text-white transition-colors"
+                  title="Mute / Unmute"
+                >
+                  <i data-lucide={isMuted ? "volume-x" : "volume-2"} className="w-4 h-4"></i>
+                </button>
+
+                {/* Direct Spotify Button */}
+                <a
+                  href={currentTrack.spotifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-medium transition-all"
+                >
+                  <i data-lucide="music" className="w-3.5 h-3.5"></i>
+                  <span>Spotify</span>
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+          {/* ================= LYRICS MODAL ================= */}
+          {selectedLyrics && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+              <div className="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 max-h-[85vh] overflow-y-auto border border-purple-500/30 relative shadow-2xl">
+                
+                <button
+                  onClick={() => setSelectedLyrics(null)}
+                  className="absolute top-5 right-5 p-2 rounded-full glass-card hover:bg-white/20 text-slate-400 hover:text-white transition-colors"
+                >
+                  <i data-lucide="x" className="w-4 h-4"></i>
+                </button>
+
+                <div className="flex items-center gap-4 mb-6">
+                  <img src={selectedLyrics.cover} alt={selectedLyrics.title} className="w-16 h-16 rounded-xl object-cover border border-white/10" />
+                  <div>
+                    <span className="text-xs font-mono text-purple-400 uppercase tracking-widest">{selectedLyrics.year} Single</span>
+                    <h3 className="font-serif italic font-bold text-3xl text-white">{selectedLyrics.title}</h3>
+                  </div>
+                </div>
+
+                <div className="whitespace-pre-line font-serif text-slate-300 text-base leading-relaxed p-4 rounded-2xl bg-black/40 border border-white/5">
+                  {selectedLyrics.fullLyrics}
+                </div>
+
+                <div className="mt-6 flex justify-between items-center text-xs">
+                  <a
+                    href={selectedLyrics.spotifyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-400 hover:underline flex items-center gap-1"
+                  >
+                    <span>Dengarkan di Spotify</span>
+                    <i data-lucide="external-link" className="w-3 h-3"></i>
+                  </a>
+                  <button
+                    onClick={() => setSelectedLyrics(null)}
+                    className="px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium transition-colors"
+                  >
+                    Tutup
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ================= LIGHTBOX IMAGE MODAL ================= */}
+          {lightboxImage && (
+            <div 
+              onClick={() => setLightboxImage(null)}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-lg cursor-pointer"
+            >
+              <div 
+                onClick={(e) => e.stopPropagation()} 
+                className="max-w-4xl w-full glass-panel rounded-3xl overflow-hidden border border-white/20 shadow-2xl"
+              >
+                <div className="relative max-h-[75vh] bg-black flex items-center justify-center">
+                  <img src={lightboxImage.src} alt={lightboxImage.title} className="max-h-[75vh] w-auto object-contain" />
+                  <button
+                    onClick={() => setLightboxImage(null)}
+                    className="absolute top-4 right-4 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white transition-colors border border-white/10"
+                  >
+                    <i data-lucide="x" className="w-5 h-5"></i>
+                  </button>
+                </div>
+                <div className="p-6 bg-brand-dark flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <span className="text-xs font-mono text-purple-400 uppercase tracking-widest">{lightboxImage.tag}</span>
+                    <h3 className="font-serif italic font-bold text-2xl text-white">{lightboxImage.title}</h3>
+                    <p className="text-xs sm:text-sm text-slate-300 mt-1">{lightboxImage.desc}</p>
+                  </div>
+                  <a 
+                    href={lightboxImage.src} 
+                    download 
+                    className="px-4 py-2 rounded-full glass-card hover:bg-white/10 text-xs font-mono text-slate-200 shrink-0 flex items-center gap-1.5"
+                  >
+                    <i data-lucide="download" className="w-3.5 h-3.5"></i>
+                    <span>Simpan Foto</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    // Render the React App
+    ReactDOM.createRoot(document.getElementById('root')).render(<ParanoiseApp />);
+  </script>
+</body>
+</html>
