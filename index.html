@@ -573,18 +573,7 @@ Salahkah bilaku mencintai dirimu`
         return `${m}:${s.toString().padStart(2, '0')}`;
       };
 
-      // Resilient Candidate Audio Path Generator
-      const getCandidatePaths = (track) => {
-        const baseName = track.id;
-        const noDashName = track.id.replace(/-/g, '');
-        return [
-          `assets/audio/${baseName}.mp3`,
-          `assets/audio/${baseName}.mp3.mp3`,
-          `assets/audio/${noDashName}.mp3`
-        ];
-      };
-
-      // Load & Play local MP3 directly with Mobile Browser Compatibility
+      // Load & Play local MP3 directly with Mobile Optimization & Android MediaSession
       const executePlayTrack = (track, shouldAutoplay = true) => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -593,41 +582,49 @@ Salahkah bilaku mencintai dirimu`
           setIsPlayerVisible(true);
         }
 
-        const candidates = getCandidatePaths(track);
-
-        const tryPlayCandidate = (idx) => {
-          if (idx >= candidates.length) {
-            console.warn("Audio file tidak dapat dimuat:", track.title);
-            setIsPlaying(false);
-            return;
-          }
-
-          const target = candidates[idx];
+        const target = `assets/audio/${track.id}.mp3`;
+        if (audio.src !== window.location.origin + '/' + target && !audio.src.endsWith(target)) {
           audio.src = target;
+        }
 
-          if (shouldAutoplay) {
-            // Synchronous play invocation preserves mobile user activation token (iOS/Android)
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => {
-                  setIsPlaying(true);
-                  setIsPlayerVisible(true);
-                })
-                .catch((err) => {
-                  if (err && err.name === "AbortError") return;
-                  console.warn("Candidate (" + target + ") gagal:", err);
-                  if (idx + 1 < candidates.length) {
-                    tryPlayCandidate(idx + 1);
-                  } else {
-                    setIsPlaying(false);
-                  }
-                });
-            }
+        if (shouldAutoplay) {
+          audio.preload = "auto";
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsPlaying(true);
+                setIsPlayerVisible(true);
+
+                // Android Notification & Lock Screen Media Session
+                if ('mediaSession' in navigator) {
+                  try {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                      title: track.title,
+                      artist: 'Paranoise',
+                      album: 'Alternative Pop',
+                      artwork: [
+                        { src: track.cover, sizes: '512x512', type: 'image/jpeg' }
+                      ]
+                    });
+                    navigator.mediaSession.setActionHandler('play', () => {
+                      if (audioRef.current) audioRef.current.play();
+                    });
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                      if (audioRef.current) audioRef.current.pause();
+                    });
+                    navigator.mediaSession.setActionHandler('previoustrack', () => playPrevTrack());
+                    navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
+                  } catch (e) {}
+                }
+              })
+              .catch((err) => {
+                if (err && err.name === "AbortError") return;
+                console.warn("Play audio failed:", err);
+                setIsPlaying(false);
+              });
           }
-        };
-
-        tryPlayCandidate(0);
+        }
       };
 
       // Initialize audio on mount (preload only, no autoplay)
@@ -752,10 +749,15 @@ Salahkah bilaku mencintai dirimu`
         }
       };
 
+      const lastTimeRef = useRef(0);
       const handleAudioTimeUpdate = () => {
         if (!isDragging && audioRef.current) {
-          setCurrentTime(audioRef.current.currentTime);
-          setDuration(audioRef.current.duration || 0);
+          const cur = audioRef.current.currentTime;
+          // Throttle state updates: only re-render when >= 0.35s passes
+          if (Math.abs(cur - lastTimeRef.current) >= 0.35 || cur < 0.5) {
+            lastTimeRef.current = cur;
+            setCurrentTime(cur);
+          }
         }
       };
 
@@ -825,7 +827,7 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
             onLoadedMetadata={handleLoadedMetadata}
             onPlay={() => setIsPlaying(true)}
             onEnded={handleAudioEnded}
-            preload="metadata"
+            preload="auto"
           />
 
           {/* ================= NAVBAR ================= */}
@@ -1603,6 +1605,7 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                         onMouseUp={handleScrubberMouseUp}
                         onTouchStart={handleScrubberMouseDown}
                         onTouchEnd={handleScrubberMouseUp}
+                        onTouchCancel={handleScrubberMouseUp}
                         className="music-scrubber"
                         title="Geser posisi lagu"
                       />
