@@ -553,7 +553,7 @@ Salahkah bilaku mencintai dirimu`
       const [navScrolled, setNavScrolled] = useState(false);
 
       const audioRef = useRef(null);
-      const candidateIndexRef = useRef(0);
+      const isTransitioningRef = useRef(false);
 
       // Scroll listener
       useEffect(() => {
@@ -563,8 +563,6 @@ Salahkah bilaku mencintai dirimu`
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
       }, []);
-
-
 
       // Format time helper MM:SS
       const formatTime = (secs) => {
@@ -585,13 +583,12 @@ Salahkah bilaku mencintai dirimu`
         ];
       };
 
-      // Load & Play local MP3 directly without popup
+      // Load & Play local MP3 directly
       const executePlayTrack = (track, shouldAutoplay = true) => {
         const audio = audioRef.current;
         if (!audio) return;
 
         const candidates = getCandidatePaths(track);
-        let cIdx = 0;
 
         const loadAndPlay = (idx) => {
           if (idx >= candidates.length) {
@@ -601,28 +598,35 @@ Salahkah bilaku mencintai dirimu`
           }
 
           const target = candidates[idx];
+          isTransitioningRef.current = true;
           audio.src = target;
+          audio.load();
 
           if (shouldAutoplay) {
-            audio.play()
-              .then(() => {
-                setIsPlaying(true);
-              })
-              .catch((err) => {
-                if (err && err.name === "AbortError") {
-                  // Buffering/interrupted, ignore
-                  return;
-                }
-                console.log("Candidate (" + target + ") gagal, mencoba alternatif:", err);
-                loadAndPlay(idx + 1);
-              });
+            const onCanPlay = () => {
+              audio.removeEventListener('canplay', onCanPlay);
+              audio.play()
+                .then(() => {
+                  isTransitioningRef.current = false;
+                  setIsPlaying(true);
+                })
+                .catch((err) => {
+                  isTransitioningRef.current = false;
+                  if (err && err.name === "AbortError") return;
+                  console.log("Candidate (" + target + ") gagal, mencoba alternatif:", err);
+                  loadAndPlay(idx + 1);
+                });
+            };
+            audio.addEventListener('canplay', onCanPlay);
+          } else {
+            isTransitioningRef.current = false;
           }
         };
 
         loadAndPlay(0);
       };
 
-      // Initialize audio on mount
+      // Initialize audio on mount (preload only, no autoplay)
       useEffect(() => {
         executePlayTrack(SINGLES_DATA[0], false);
       }, []);
@@ -636,19 +640,15 @@ Salahkah bilaku mencintai dirimu`
           audio.pause();
           setIsPlaying(false);
         } else {
-          setIsPlaying(true);
           if (!audio.src || audio.src.endsWith('/') || audio.networkState === 3) {
             executePlayTrack(currentTrack, true);
           } else {
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then(() => setIsPlaying(true))
-                .catch((err) => {
-                  console.warn("Direct play failed, trying fallback:", err);
-                  executePlayTrack(currentTrack, true);
-                });
-            }
+            audio.play()
+              .then(() => setIsPlaying(true))
+              .catch((err) => {
+                console.warn("Direct play failed, trying fallback:", err);
+                executePlayTrack(currentTrack, true);
+              });
           }
         }
       };
@@ -802,7 +802,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
             onTimeUpdate={handleAudioTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
             onEnded={handleAudioEnded}
             preload="auto"
           />
