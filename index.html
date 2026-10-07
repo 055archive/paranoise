@@ -47,30 +47,22 @@
           },
           animation: {
             'spin-slow': 'spin 18s linear infinite',
-            'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'float': 'float 5s ease-in-out infinite'
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-10px)' }
-            }
+            'pulse-subtle': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
           }
         }
       }
     }
   </script>
 
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- React 18 & Babel Standalone for Instant In-Browser Execution -->
+
+  <!-- React 18 & Babel Standalone -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    /* Custom Film Grain Overlay */
+    /* Film Grain Overlay */
     .film-grain {
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
     }
@@ -92,9 +84,9 @@
 
     /* Glassmorphism helpers */
     .glass-panel {
-      background: rgba(18, 18, 26, 0.72);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(18, 18, 26, 0.90);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .glass-card {
@@ -105,6 +97,59 @@
     }
     .glass-card:hover {
       border-color: rgba(216, 180, 226, 0.25);
+    }
+
+    /* Range Slider Styling for Interactive Music App Feel */
+    input[type="range"].music-scrubber {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+      width: 100%;
+    }
+    input[type="range"].music-scrubber:focus {
+      outline: none;
+    }
+    input[type="range"].music-scrubber::-webkit-slider-runnable-track {
+      height: 5px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.16);
+      transition: background 0.2s ease;
+    }
+    input[type="range"].music-scrubber:hover::-webkit-slider-runnable-track {
+      background: rgba(255, 255, 255, 0.28);
+    }
+    input[type="range"].music-scrubber::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      margin-top: -4.5px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    input[type="range"].music-scrubber:hover::-webkit-slider-thumb {
+      transform: scale(1.3);
+      box-shadow: 0 0 14px rgba(255, 255, 255, 1);
+    }
+
+    /* Firefox Range Slider */
+    input[type="range"].music-scrubber::-moz-range-track {
+      height: 5px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.16);
+    }
+    input[type="range"].music-scrubber::-moz-range-thumb {
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: none;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+    input[type="range"].music-scrubber:hover::-moz-range-thumb {
+      transform: scale(1.3);
     }
   </style>
 </head>
@@ -140,6 +185,76 @@
       spotifyId: "6pD26dt90NPyn282mBqcA3"
     };
 
+    // Platform Streaming Links & Brand Config
+    const STREAMING_PLATFORMS = [
+      {
+        name: "Spotify",
+        url: "https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3",
+        brandColor: "#1db954",
+        hoverBorder: "hover:border-emerald-500/50 hover:bg-emerald-500/10",
+        icon: (
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#1db954]">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.494 17.306c-.215.352-.676.463-1.028.248-2.812-1.718-6.352-2.107-10.52-1.155-.403.092-.806-.157-.898-.56-.092-.403.157-.806.56-.898 4.568-1.042 8.487-.597 11.638 1.337.352.215.463.676.248 1.028zm1.467-3.262c-.27.441-.852.578-1.293.308-3.218-1.978-8.125-2.55-11.932-1.393-.497.151-1.027-.132-1.178-.629-.151-.497.132-1.027.629-1.178 4.356-1.323 9.771-.684 13.466 1.599.441.27.578.852.308 1.293zm.126-3.41c-3.859-2.292-10.228-2.503-13.914-1.384-.592.179-1.22-.162-1.399-.754-.179-.592.162-1.22.754-1.399 4.237-1.287 11.272-1.037 15.719 1.603.532.316.705 1.006.389 1.538-.316.532-1.006.705-1.538.389z"/>
+          </svg>
+        )
+      },
+      {
+        name: "Apple Music",
+        url: "https://music.apple.com/us/search?term=Paranoise",
+        brandColor: "#fa2d48",
+        hoverBorder: "hover:border-rose-500/50 hover:bg-rose-500/10",
+        icon: (
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#fa2d48]">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.38c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.63 1.35-.57.66-.99 1.72-.85 2.74 1.01.08 2.03-.51 2.56-1.24z"/>
+          </svg>
+        )
+      },
+      {
+        name: "YouTube Music",
+        url: "https://music.youtube.com/search?q=Paranoise",
+        brandColor: "#ff0000",
+        hoverBorder: "hover:border-red-500/50 hover:bg-red-500/10",
+        icon: (
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-[#ff0000]">
+            <path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.5c-4.14 0-7.5-3.36-7.5-7.5s3.36-7.5 7.5-7.5 7.5 3.36 7.5 7.5-3.36 7.5-7.5 7.5zm0-11.25c-2.07 0-3.75 1.68-3.75 3.75s1.68 3.75 3.75 3.75 3.75-1.68 3.75-3.75-1.68-3.75-3.75-3.75zm-1.5 5.25v-3l2.6 1.5-2.6 1.5z"/>
+          </svg>
+        )
+      },
+      {
+        name: "Tidal",
+        url: "https://tidal.com/browse/search?q=Paranoise",
+        brandColor: "#00ffff",
+        hoverBorder: "hover:border-cyan-400/50 hover:bg-cyan-400/10",
+        icon: (
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-cyan-300">
+            <path d="M12.012 3.992L8.008 7.996l4.004 4.004 4.004-4.004-4.004-4.004zm-8.02 8.02L0 16.016l4.004 4.004 4.004-4.004L3.992 12.012zm8.02 0L8.008 16.016l4.004 4.004 4.004-4.004-4.004-4.004zm8.02 0l-4.004 4.004 4.004 4.004 4.004-4.004-4.004-4.004z"/>
+          </svg>
+        )
+      },
+      {
+        name: "Amazon Music",
+        url: "https://music.amazon.com/search/Paranoise",
+        brandColor: "#ff9900",
+        hoverBorder: "hover:border-amber-400/50 hover:bg-amber-400/10",
+        icon: (
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-amber-400">
+            <path d="M13.882 17.513c-3.716 2.378-8.243 1.343-11.282-.572-.256-.161-.054-.48.232-.39 3.256 1.026 7.697 1.365 10.741-.65.45-.298.81.257.309.612zm1.252-1.391c-.244-.316-.763-.646-1.503-.122-1.33.943-3.69 1.688-6.19 1.517-2.07-.14-3.955-1.077-4.42-1.332-.23-.126-.388.163-.198.347 1.144 1.107 3.393 2.155 6.096 2.062 2.65-.091 5.093-1.127 6.438-2.065.289-.204.02-.646-.223-.407zm7.844-6.392c-.173-.095-.383-.047-.482.126l-2.064 3.633-1.075-1.892c-.097-.17-.307-.222-.482-.126-.17.098-.225.309-.128.48l1.328 2.336c.05.088.138.143.238.152.099.009.197-.03.26-.107l2.531-4.422c.099-.172.044-.385-.126-.48zm-11.39-3.418c-1.38 0-2.476.992-2.476 2.456 0 1.488 1.096 2.484 2.476 2.484 1.382 0 2.458-.996 2.458-2.484 0-1.464-1.076-2.456-2.458-2.456zm0 3.738c-.732 0-1.284-.572-1.284-1.282 0-.712.552-1.284 1.284-1.284.732 0 1.266.572 1.266 1.284 0 .71-.534 1.282-1.266 1.282z"/>
+          </svg>
+        )
+      },
+      {
+        name: "TikTok",
+        url: "https://www.tiktok.com/@prnois",
+        brandColor: "#00f2fe",
+        hoverBorder: "hover:border-cyan-300/50 hover:bg-cyan-300/10",
+        icon: (
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-cyan-300">
+            <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743 2.895 2.895 0 0 1 2.313-4.637c.307 0 .605.05.887.142V9.425a6.34 6.34 0 0 0-6.643 6.309 6.342 6.342 0 0 0 6.342 6.342 6.335 6.335 0 0 0 6.34-6.342V8.69a8.196 8.196 0 0 0 4.977 1.688V6.933a4.786 4.786 0 0 1-1.8-.247z"/>
+          </svg>
+        )
+      }
+    ];
+
     const SINGLES_DATA = [
       {
         id: "gugur",
@@ -147,28 +262,53 @@
         year: "2026",
         isLatest: true,
         cover: "assets/gugur.jpg",
+        audioSrc: "assets/audio/gugur.mp3",
+        spotifyAlbumId: "4cXbqcvnCMWhPZiElKeclF",
         spotifyUrl: "https://open.spotify.com/album/4cXbqcvnCMWhPZiElKeclF",
-        spotifyTrackId: "6Pb4u27upPP6APMNXynEMA",
         duration: "03:42",
-        lyricsSnippet: "Terhempas perlahan bersama waktu yang berlalu, gugur setiap asa namun menyisakan jejak yang abadi.",
+        lyricsSnippet: "Kita semakin dekat saat dunia menjauh. Jika cinta harus singkat, biarlah ia melangkah jauh.",
         fullLyrics: `GUGUR — Paranoise (2026)
 
 [Verse 1]
-Angin berbisik lirih menyapa malam
-Bayangmu memudar di sudut ruang yang kelam
-Semua yang terucap kini meredup perlahan
-Tinggalkan rindu di batas kepasrahan
+Kalender yang tak ingin kubaca
+Hari gugur tanpa suara
+Aku bertemu matamu yang rapuh
+Antara takut dan pura-pura utuh
+
+[Verse 2]
+Kau tersenyum seolah waktu berpihak
+Padahal ia mendekat pelan
+Kita tahu akhir tak bisa ditunda
+Namun tetap memilih saling harap
 
 [Chorus]
-Biar gugur semua asa yang pernah ada
-Bersama hujan yang menghapus jejak kita
-Jika melepaskan adalah jalan cerita
-Kurelakan hatiku tenang dalam jeda
+Kita semakin dekat
+Saat dunia menjauh
+Jika cinta harus singkat
+Biarlah ia melangkah jauh
 
-[Outro]
-Gugur... dalam hening...
-Sampai kita lupa rasa sakit yang tinggal.`,
-        soundTone: { root: 220, type: "sawtooth", mood: "melancholic dreamy" }
+[Spoken Words]
+"10 years... or 20..."
+"Even just one more day..."
+"One more minute..."
+"One more second..."
+"I just... want more time with you."
+
+[Chorus]
+Kita semakin dekat
+Di batas yang tak kasat
+Bukan untuk sementara
+Namun cukup untuk bermakna
+
+[Bridge]
+Tak lagi sendirian
+Aku pernah dicintaimu
+Aku pergi dengan tenang
+Karena pernah memilikimu
+
+[Outro - Spoken Words]
+— "So, this is goodbye?"
+— "Maybe... this was enough for a lifetime."`
       },
       {
         id: "anything-for-you",
@@ -176,24 +316,56 @@ Sampai kita lupa rasa sakit yang tinggal.`,
         year: "2026",
         isLatest: false,
         cover: "assets/anything-for-you.jpg",
+        audioSrc: "assets/audio/anything-for-you.mp3",
+        spotifyAlbumId: "5Fo1XRwyqxEeuPfjxoUVP5",
         spotifyUrl: "https://open.spotify.com/album/5Fo1XRwyqxEeuPfjxoUVP5",
-        spotifyTrackId: "anything-for-you",
         duration: "03:18",
-        lyricsSnippet: "I’d cross the darkest oceans and turn the sky around, just to keep your heart alive.",
+        lyricsSnippet: "I will do anything for you and I will sacrifice anything for you, to make you happy when you are with me.",
         fullLyrics: `Anything For You — Paranoise (2026)
 
 [Verse 1]
-Late night calls, driving down the empty streets
-Hearing your voice makes my lonely heart skip beats
-Even when the world feels too loud to bear
-Just know that whenever you call, I’m right there
+Beribu-ribu banyak kata
+Berjuta-juta kalimat
+Sangat sulit agar bisa
+Menjelaskan parasmu yang menawan
+Setiap hari ku hanya bisa
+Memikirkan berapa banyak
+Pujian yang kau dapat karena
+Indahnya dirimu
+Saat kau bersenda gurau dengan teman-temanmu
+Dan di saat kau bahagia
+Ku merasa dunia ini sangatlah berarti
 
 [Chorus]
-I would do anything for you, darling
-Carry your shadows when the stars stop shining
-No matter the distance, no matter the view
-I’ll give everything... anything for you.`,
-        soundTone: { root: 261.63, type: "sine", mood: "warm romantic" }
+I will always be there if you are tired
+I will always comfort if you are feeling low
+I will do anything for you
+And I will sacrifice anything for you
+To make you happy when you are with me
+
+[Verse 2]
+Apakah kau tahu jika kau sangat berharga
+Di negara yang penuh kegelapan ini
+Apakah kau tahu hanya kaulah harta
+Di hidupku yang menjadikan indah
+Kaulah yang aku butuhkan untuk mewarnai hidupku
+Kaulah seseorang yang selama ini aku nanti di dalam hidupku
+
+[Chorus]
+I will always be there if you are tired
+I will always comfort if you are feeling low
+I will do anything for you
+And I will sacrifice anything for you
+To make you happy when you are with me
+
+(Instrumental / Solo Gitar)
+
+[Chorus]
+I will always be there if you are tired
+I will always comfort if you are feeling low
+I will do anything for you
+And I will sacrifice anything for you
+To make you happy when you are with me`
       },
       {
         id: "memori",
@@ -201,24 +373,57 @@ I’ll give everything... anything for you.`,
         year: "2025",
         isLatest: false,
         cover: "assets/memori.jpg",
+        audioSrc: "assets/audio/memori.mp3",
+        spotifyAlbumId: "72bhlblYdjd9QOCY7Ttu88",
         spotifyUrl: "https://open.spotify.com/album/72bhlblYdjd9QOCY7Ttu88",
-        spotifyTrackId: "memori",
-        duration: "03:55",
-        lyricsSnippet: "Tersimpan rapi dalam lipatan masa lalu, setiap tawa dan tangis yang pernah kita tuju.",
+        duration: "04:32",
+        lyricsSnippet: "Lupakan saja semua kenangan, biar cerita berakhir dalam memori. Semua tinggal cerita saat-saat bersama.",
         fullLyrics: `Memori — Paranoise (2025)
 
+[Intro]
+Ooh...
+
 [Verse 1]
-Membuka album lama yang penuh debu
-Tatap mata itu yang kini bukan milikku
-Betapa cepat waktu merubah segalanya
-Dari kita yang tak terpisahkan, kini jadi cerita
+Surat darimu yang selalu tersimpan
+Akan selalu terbayang angan
+Cinta darimu yang pernah singgah
+Tak pernah kuharap semua berpisah
 
 [Chorus]
-Memori itu tak pernah benar-benar hilang
-Ia datang saat senja perlahan menghilang
-Menghangatkan dingin yang tak bersuara
-Tentang kita di masa paling berharga.`,
-        soundTone: { root: 196.00, type: "triangle", mood: "nostalgic retro" }
+Lupakan saja semua kenangan
+Ini memang salahku, jangan salahkan dirimu
+Biar cerita berakhir dalam memori
+Semua tinggal cerita saat-saat bersama
+Biar cerita berakhir dalam memori
+
+[Verse 2]
+Rasa ingin bersama di sini
+Rapuh saat kau pergi
+Dalam sendiri terbungkam sepi
+Biar dalam memori
+Usai semua cerita kini
+Namun kau hadir kembali
+Pergilah saja kau pergi
+
+[Chorus]
+Lupakan saja semua kenangan
+Ini memang salahku, jangan salahkan dirimu
+Biar cerita berakhir dalam memori
+Semua tinggal cerita saat-saat bersama
+Biar cerita berakhir dalam memori
+
+[Bridge / Breakdown]
+When the dark has been covered!
+Everything will turn to dust!
+You can feel the misery!
+And then you can't walk anymore!
+You can't go my own way!
+
+[Outro]
+Tenang, tenanglah...
+Jawaban ada waktunya...
+Takkan jadi nyata...
+Semua dalam memori...`
       },
       {
         id: "berharap",
@@ -226,24 +431,64 @@ Tentang kita di masa paling berharga.`,
         year: "2024",
         isLatest: false,
         cover: "assets/berharap.jpg",
+        audioSrc: "assets/audio/berharap.mp3",
+        spotifyAlbumId: "0mH2WL1S7LxAahTvl54blv",
         spotifyUrl: "https://open.spotify.com/album/0mH2WL1S7LxAahTvl54blv",
-        spotifyTrackId: "1u6gvMLTV2lHITJz1iVJtC",
         duration: "04:12",
-        lyricsSnippet: "Masih di sini menggenggam sisa asa, meski tahu kau telah melangkah tanpa rasa.",
+        lyricsSnippet: "Berharap untuk bisa bersamamu, walaupun kutahu itu kita takkan bersama. Salahkah ku terlalu mencintai?",
         fullLyrics: `Berharap — Paranoise (2024)
 
-[Verse 1]
-Langkah kaki terhenti di persimpangan
-Menatap langit mendung tanpa kepastian
-Haruskah kupertahankan rasa yang menyiksa
-Atau kubiarkan menguap bersama udara?
+[Verse]
+Kita tak saling mengenal
+Ku hanya bisa melihatmu di ujung ruang
+Menatap indah matamu
+Senyum manismu dan parasmu
+Dan selalu tertuju kepadamu
+
+[Pre-Chorus]
+Aku hanya bisa berharap
+Kapan ku bisa memilikimu seutuhnya
+Bila bisa kumilikimu
+Pastikan bahagia dan akan kujaga
+Selamanya...
 
 [Chorus]
-Ku masih berharap kau akan menoleh
-Melihat hati yang tak pernah lelah memilih
-Walau pada akhirnya aku mengerti
-Berharap padamu adalah luka yang kucari sendiri.`,
-        soundTone: { root: 174.61, type: "sine", mood: "emotional longing" }
+Berharap untuk bisa bersamamu
+Walaupun kutahu itu kita takkan bersama
+Salahkah ku terlalu mencintai
+Dirimu yang takkan mungkin cintaiku seutuhnya
+
+[Pre-Chorus]
+Aku hanya bisa berharap
+Kapan ku bisa memilikimu seutuhnya
+Bila bisa kumilikimu
+Pastikan bahagia dan akan kujaga
+Selamanya...
+
+[Chorus]
+Berharap untuk bisa bersamamu
+Walaupun kutahu itu kita takkan bersama
+Salahkah ku terlalu mencintai
+Dirimu yang takkan mungkin cintaiku seutuhnya
+
+(Instrumental / Solo Gitar)
+
+[Pre-Chorus]
+Aku hanya bisa berharap
+Kapan ku bisa memilikimu seutuhnya
+Bila bisa kumilikimu
+Pastikan bahagia dan akan kujaga
+Selamanya...
+
+[Chorus]
+Berharap untuk bisa bersamamu
+Walaupun kutahu itu kita takkan bersama
+Salahkah ku terlalu mencintai
+Dirimu yang takkan mungkin cintaiku seutuhnya
+
+[Outro]
+Salahkah bilaku mencintai dirimu
+Salahkah bilaku mencintai dirimu`
       }
     ];
 
@@ -292,171 +537,217 @@ Berharap padamu adalah luka yang kucari sendiri.`,
       }
     ];
 
-    // --- SYNTHESIZED AMBIENT AUDIO ENGINE (Web Audio API) ---
-    // Memberikan preview suara dreamy musik alt-pop langsung di browser tanpa butuh hosting audio eksternal!
-    class AmbientAudioEngine {
-      constructor() {
-        this.ctx = null;
-        this.isPlaying = false;
-        this.currentOscs = [];
-        this.gainNode = null;
-      }
-
-      init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContext();
-          this.gainNode = this.ctx.createGain();
-          this.gainNode.gain.setValueAtTime(0.12, this.ctx.currentTime);
-          this.gainNode.connect(this.ctx.destination);
-        }
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      }
-
-      playTrack(track) {
-        this.init();
-        this.stop();
-
-        const baseFreq = track.soundTone ? track.soundTone.root : 220;
-        // Akor Dreamy Alt-Pop: Root, Minor 3rd/Major 3rd, 5th, Major 7th
-        const chordMultipliers = [1, 1.1892, 1.4983, 1.8877];
-
-        const now = this.ctx.currentTime;
-        const subGain = this.ctx.createGain();
-        subGain.gain.setValueAtTime(0.001, now);
-        subGain.gain.exponentialRampToValueAtTime(0.08, now + 1.2);
-        subGain.connect(this.gainNode);
-
-        chordMultipliers.forEach((mult, index) => {
-          const osc = this.ctx.createOscillator();
-          const filter = this.ctx.createBiquadFilter();
-
-          osc.type = index % 2 === 0 ? "sine" : "triangle";
-          osc.frequency.setValueAtTime(baseFreq * mult, now);
-
-          // Subtle chorus/detune for that nostalgic dreamy warmth
-          osc.detune.setValueAtTime((index - 1.5) * 6, now);
-
-          filter.type = "lowpass";
-          filter.frequency.setValueAtTime(800 + (index * 200), now);
-
-          osc.connect(filter);
-          filter.connect(subGain);
-          osc.start(now);
-          this.currentOscs.push(osc);
-        });
-
-        this.currentSubGain = subGain;
-        this.isPlaying = true;
-      }
-
-      stop() {
-        if (this.ctx && this.currentOscs.length > 0) {
-          const now = this.ctx.currentTime;
-          if (this.currentSubGain) {
-            this.currentSubGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
-          }
-          setTimeout(() => {
-            this.currentOscs.forEach(o => {
-              try { o.stop(); o.disconnect(); } catch (e) {}
-            });
-            this.currentOscs = [];
-          }, 850);
-        }
-        this.isPlaying = false;
-      }
-
-      setVolume(vol) {
-        if (this.gainNode && this.ctx) {
-          this.gainNode.gain.setValueAtTime(vol * 0.18, this.ctx.currentTime);
-        }
-      }
-    }
-
-    const audioEngine = new AmbientAudioEngine();
-
-    // --- MAIN REACT APPLICATION ---
     function ParanoiseApp() {
       const [currentTrack, setCurrentTrack] = useState(SINGLES_DATA[0]);
       const [isPlaying, setIsPlaying] = useState(false);
-      const [playbackProgress, setPlaybackProgress] = useState(0);
-      const [volume, setVolume] = useState(0.7);
+      const [currentTime, setCurrentTime] = useState(0);
+      const [duration, setDuration] = useState(0);
+      const [isDragging, setIsDragging] = useState(false);
+      const [dragTime, setDragTime] = useState(0);
+      const [volume, setVolume] = useState(0.85);
       const [isMuted, setIsMuted] = useState(false);
       const [selectedLyrics, setSelectedLyrics] = useState(null);
       const [lightboxImage, setLightboxImage] = useState(null);
-      const [spotifyModalAlbum, setSpotifyModalAlbum] = useState(null);
+      const [showSpotifyDrawer, setShowSpotifyDrawer] = useState(false);
       const [epkCopied, setEpkCopied] = useState(false);
       const [navScrolled, setNavScrolled] = useState(false);
 
-      // Scroll detector for Navbar
+      const audioRef = useRef(null);
+      const candidateIndexRef = useRef(0);
+
+      // Scroll listener
       useEffect(() => {
         const handleScroll = () => {
-          if (window.scrollY > 50) {
-            setNavScrolled(true);
-          } else {
-            setNavScrolled(false);
-          }
+          setNavScrolled(window.scrollY > 50);
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
       }, []);
 
-      // Lucide icons re-run
-      useEffect(() => {
-        if (window.lucide) {
-          window.lucide.createIcons();
-        }
-      });
 
-      // Playback progress ticker
+
+      // Format time helper MM:SS
+      const formatTime = (secs) => {
+        if (isNaN(secs) || secs < 0) return "0:00";
+        const m = Math.floor(secs / 60);
+        const s = Math.floor(secs % 60);
+        return `${m}:${s.toString().padStart(2, '0')}`;
+      };
+
+      // Resilient Candidate Audio Path Generator
+      const getCandidatePaths = (track) => {
+        const baseName = track.id;
+        const noDashName = track.id.replace(/-/g, '');
+        return [
+          `assets/audio/${baseName}.mp3`,
+          `assets/audio/${baseName}.mp3.mp3`,
+          `assets/audio/${noDashName}.mp3`,
+          `assets/audio/${noDashName}.mp3.mp3`
+        ];
+      };
+
+      // Load & Play with multiple candidate paths fallback
+      const executePlayTrack = (track, shouldAutoplay = true) => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const candidates = getCandidatePaths(track);
+        candidateIndexRef.current = 0;
+
+        const tryCandidate = (index) => {
+          if (index >= candidates.length) {
+            console.warn("Semua variasi nama file audio tidak ditemukan, fallback ke Spotify drawer.");
+            setIsPlaying(false);
+            setShowSpotifyDrawer(true);
+            return;
+          }
+
+          const targetPath = candidates[index];
+          audio.src = targetPath;
+          audio.load();
+
+          if (shouldAutoplay) {
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  setIsPlaying(true);
+                })
+                .catch(err => {
+                  console.log("Candidate failed (" + targetPath + "), mencoba variasi berikutnya:", err);
+                  tryCandidate(index + 1);
+                });
+            }
+          }
+        };
+
+        tryCandidate(0);
+      };
+
+      // Initialize audio on mount
       useEffect(() => {
-        let interval = null;
+        executePlayTrack(SINGLES_DATA[0], false);
+      }, []);
+
+      // 1. PRIMARY PLAY / PAUSE TOGGLE
+      const togglePlayPause = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
         if (isPlaying) {
-          interval = setInterval(() => {
-            setPlaybackProgress(prev => {
-              if (prev >= 100) {
-                // Next track or loop
-                return 0;
-              }
-              return prev + 0.5;
-            });
-          }, 500);
-        } else {
-          clearInterval(interval);
-        }
-        return () => clearInterval(interval);
-      }, [isPlaying]);
-
-      // Audio Control
-      const togglePlay = (trackToPlay = null) => {
-        const target = trackToPlay || currentTrack;
-        if (isPlaying && (!trackToPlay || trackToPlay.id === currentTrack.id)) {
-          audioEngine.stop();
+          audio.pause();
           setIsPlaying(false);
         } else {
-          setCurrentTrack(target);
-          audioEngine.playTrack(target);
           setIsPlaying(true);
-          setPlaybackProgress(0);
+          if (!audio.src || audio.src.endsWith('/') || audio.networkState === 3) {
+            executePlayTrack(currentTrack, true);
+          } else {
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => setIsPlaying(true))
+                .catch((err) => {
+                  console.warn("Direct play failed, trying fallback:", err);
+                  executePlayTrack(currentTrack, true);
+                });
+            }
+          }
         }
       };
 
-      const handleVolumeChange = (newVol) => {
-        setVolume(newVol);
-        if (isMuted) setIsMuted(false);
-        audioEngine.setVolume(newVol);
+      // 2. NEXT TRACK
+      const playNextTrack = () => {
+        const curIndex = SINGLES_DATA.findIndex(s => s.id === currentTrack.id);
+        const nextIndex = (curIndex + 1) % SINGLES_DATA.length;
+        const nextTrack = SINGLES_DATA[nextIndex];
+        setCurrentTrack(nextTrack);
+        setIsPlaying(true);
+        executePlayTrack(nextTrack, true);
       };
 
-      const toggleMute = () => {
-        if (isMuted) {
-          audioEngine.setVolume(volume);
-          setIsMuted(false);
+      // 3. PREVIOUS TRACK
+      const playPrevTrack = () => {
+        const audio = audioRef.current;
+        if (audio && audio.currentTime > 3) {
+          audio.currentTime = 0;
+          setCurrentTime(0);
+          return;
+        }
+        const curIndex = SINGLES_DATA.findIndex(s => s.id === currentTrack.id);
+        const prevIndex = (curIndex - 1 + SINGLES_DATA.length) % SINGLES_DATA.length;
+        const prevTrack = SINGLES_DATA[prevIndex];
+        setCurrentTrack(prevTrack);
+        setIsPlaying(true);
+        executePlayTrack(prevTrack, true);
+      };
+
+      // 4. PLAY SPECIFIC TRACK
+      const playSpecificTrack = (track) => {
+        if (currentTrack.id === track.id) {
+          togglePlayPause();
         } else {
-          audioEngine.setVolume(0);
-          setIsMuted(true);
+          setCurrentTrack(track);
+          setIsPlaying(true);
+          executePlayTrack(track, true);
         }
+      };
+
+      // 5. MUTE / UNMUTE
+      const toggleMute = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        const nextState = !isMuted;
+        audio.muted = nextState;
+        setIsMuted(nextState);
+      };
+
+      // 6. VOLUME SLIDER
+      const handleVolumeChange = (e) => {
+        const newVol = parseFloat(e.target.value);
+        setVolume(newVol);
+        if (audioRef.current) {
+          audioRef.current.volume = newVol;
+          if (newVol > 0 && isMuted) {
+            audioRef.current.muted = false;
+            setIsMuted(false);
+          }
+        }
+      };
+
+      // 7. SEEKBAR / SCRUBBER
+      const handleScrubberChange = (e) => {
+        const val = parseFloat(e.target.value);
+        setDragTime(val);
+      };
+
+      const handleScrubberMouseDown = () => {
+        setIsDragging(true);
+      };
+
+      const handleScrubberMouseUp = (e) => {
+        const val = parseFloat(e.target.value);
+        setIsDragging(false);
+        if (audioRef.current) {
+          audioRef.current.currentTime = val;
+          setCurrentTime(val);
+        }
+      };
+
+      const handleAudioTimeUpdate = () => {
+        if (!isDragging && audioRef.current) {
+          setCurrentTime(audioRef.current.currentTime);
+          setDuration(audioRef.current.duration || 0);
+        }
+      };
+
+      const handleLoadedMetadata = () => {
+        if (audioRef.current) {
+          setDuration(audioRef.current.duration || 0);
+        }
+      };
+
+      const handleAudioEnded = () => {
+        playNextTrack();
       };
 
       const copyEPKInfo = () => {
@@ -474,21 +765,56 @@ Email: paranoisemusic696@gmail.com
 Instagram: @prnois
 Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
 
-        navigator.clipboard.writeText(epkSummary);
-        setEpkCopied(true);
-        setTimeout(() => setEpkCopied(false), 3000);
+        const markCopied = () => {
+          setEpkCopied(true);
+          setTimeout(() => setEpkCopied(false), 3000);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(epkSummary)
+            .then(markCopied)
+            .catch(() => {
+              const ta = document.createElement("textarea");
+              ta.value = epkSummary;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand("copy");
+              document.body.removeChild(ta);
+              markCopied();
+            });
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = epkSummary;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          markCopied();
+        }
       };
 
+      const activeTime = isDragging ? dragTime : currentTime;
+
       return (
-        <div className="relative pb-32">
+        <div className="relative pb-36">
           
-          {/* ================= NAVIGATION BAR ================= */}
+          {/* Native HTML5 Audio Element with full lifecycle sync */}
+          <audio 
+            ref={audioRef}
+            onTimeUpdate={handleAudioTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onEnded={handleAudioEnded}
+            preload="auto"
+          />
+
+          {/* ================= NAVBAR ================= */}
           <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
             navScrolled ? "glass-panel py-3 shadow-2xl border-b border-white/10" : "bg-transparent py-5"
           }`}>
             <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
               
-              {/* Brand Logo & Name */}
               <a href="#hero" className="flex items-center gap-3 group">
                 <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/20 group-hover:border-purple-400/80 transition-all shadow-md">
                   <img src="assets/logo.png" alt="Paranoise Logo" className="w-full h-full object-cover" />
@@ -503,7 +829,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                 </div>
               </a>
 
-              {/* Navigation Links */}
               <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
                 <a href="#hero" className="hover:text-purple-300 transition-colors">Latest</a>
                 <a href="#discography" className="hover:text-purple-300 transition-colors">Discography</a>
@@ -511,25 +836,32 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                 <a href="#epk" className="hover:text-purple-300 transition-colors">EPK & Booking</a>
               </div>
 
-              {/* Quick Actions (Spotify & Social) */}
               <div className="flex items-center gap-3">
-                <a 
-                  href={BAND_INFO.spotifyUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <button 
+                  onClick={() => setShowSpotifyDrawer(!showSpotifyDrawer)}
                   className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold tracking-wide transition-all shadow-sm hover:scale-105"
+                  title="Buka Spotify Web Player"
                 >
-                  <i data-lucide="music" className="w-3.5 h-3.5"></i>
-                  <span>Spotify</span>
-                </a>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-emerald-400">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                  </svg>
+                  <span>Spotify Player</span>
+                </button>
                 <a 
                   href={BAND_INFO.instagramLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="p-2 rounded-full glass-card hover:text-pink-400 text-slate-400 transition-colors"
+                  className="p-2 rounded-full glass-card hover:border-pink-500/50 text-pink-400 transition-all hover:scale-110"
                   title="Instagram @prnois"
                 >
-                  <i data-lucide="instagram" className="w-4 h-4"></i>
+                  {/* High Resolution Official Instagram SVG */}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
+                  </svg>
                 </a>
               </div>
             </div>
@@ -538,7 +870,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
           {/* ================= HERO SECTION (SPOTLIGHT: GUGUR) ================= */}
           <section id="hero" className="min-h-screen pt-28 pb-16 flex items-center justify-center relative overflow-hidden px-6">
             
-            {/* Background Band Photo Texture with Dark Moody Vignette */}
             <div className="absolute inset-0 pointer-events-none opacity-20 filter grayscale contrast-125 mix-blend-luminosity">
               <img src="assets/band-hero.png" alt="Paranoise Band Background" className="w-full h-full object-cover object-center" />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/90 to-brand-black/60"></div>
@@ -546,16 +877,13 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
 
             <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
               
-              {/* Left Column: Headline & Release Info */}
               <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
                 
-                {/* Release Tag */}
                 <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full glass-card border-purple-500/30 text-purple-300 text-xs font-semibold tracking-widest uppercase">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                   <span>NEW RELEASE • 2026</span>
                 </div>
 
-                {/* Main Song Title */}
                 <div className="space-y-2">
                   <h1 className="font-serif italic font-bold text-6xl sm:text-7xl lg:text-8xl text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-purple-300 tracking-tight leading-none">
                     GUGUR
@@ -565,68 +893,100 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                   </p>
                 </div>
 
-                {/* Lyrics Hook Snippet */}
                 <blockquote className="border-l-2 border-purple-500/40 pl-4 py-1 text-slate-300 italic font-serif text-lg sm:text-xl max-w-xl mx-auto lg:mx-0 bg-purple-950/10 rounded-r-lg">
                   "{SINGLES_DATA[0].lyricsSnippet}"
                 </blockquote>
 
-                {/* Action Buttons */}
                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
-                  {/* Play Interactive Button */}
+                  
+                  {/* Primary Play Button for Gugur */}
                   <button 
-                    onClick={() => togglePlay(SINGLES_DATA[0])}
+                    onClick={() => playSpecificTrack(SINGLES_DATA[0])}
                     className="flex items-center gap-3 px-6 py-3.5 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium text-sm shadow-xl shadow-purple-950/50 hover:shadow-purple-700/30 transition-all hover:scale-105"
                   >
-                    <i data-lucide={isPlaying && currentTrack.id === "gugur" ? "pause" : "play"} className="w-4 h-4 fill-current"></i>
-                    <span>{isPlaying && currentTrack.id === "gugur" ? "Pause Dream Preview" : "Play Web Preview"}</span>
+                    {isPlaying && currentTrack.id === "gugur" ? (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                        <rect x="6" y="4" width="4" height="16" rx="1" />
+                        <rect x="14" y="4" width="4" height="16" rx="1" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                    )}
+                    <span>{isPlaying && currentTrack.id === "gugur" ? "Jeda Audio" : "Putar Lagu GUGUR"}</span>
                   </button>
 
                   {/* Open in Spotify */}
-                  <a 
-                    href={SINGLES_DATA[0].spotifyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button 
+                    onClick={() => {
+                      setCurrentTrack(SINGLES_DATA[0]);
+                      setShowSpotifyDrawer(true);
+                    }}
                     className="flex items-center gap-2 px-5 py-3.5 rounded-full glass-card hover:bg-white/10 text-slate-200 text-sm font-medium transition-all hover:scale-105"
                   >
-                    <i data-lucide="external-link" className="w-4 h-4 text-emerald-400"></i>
-                    <span>Stream on Spotify</span>
-                  </a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-emerald-400">
+                      <path d="M9 18V5l12-2v13" />
+                      <circle cx="6" cy="18" r="3" />
+                      <circle cx="18" cy="16" r="3" />
+                    </svg>
+                    <span>Spotify Player</span>
+                  </button>
 
-                  {/* View Lyrics Button */}
                   <button 
                     onClick={() => setSelectedLyrics(SINGLES_DATA[0])}
                     className="flex items-center gap-2 px-4 py-3.5 rounded-full glass-card hover:bg-white/10 text-slate-300 text-sm font-medium transition-all"
                   >
-                    <i data-lucide="file-text" className="w-4 h-4 text-purple-400"></i>
-                    <span>Read Lyrics</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-purple-400">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <span>Lirik</span>
                   </button>
                 </div>
 
-                {/* Quick stats / metadata */}
-                <div className="pt-6 border-t border-white/5 flex flex-wrap items-center justify-center lg:justify-start gap-8 text-xs text-slate-400 font-mono">
-                  <div>GENRE: <span className="text-slate-200">Alternative Pop</span></div>
-                  <div>RELEASE: <span className="text-slate-200">August 2026</span></div>
-                  <div>FORMAT: <span className="text-slate-200">Digital Single</span></div>
+                {/* ================= OFFICIAL STREAMING PLATFORM BADGES ================= */}
+                <div className="pt-6 border-t border-white/10 space-y-3">
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400 font-mono uppercase tracking-wider">
+                    <div>GENRE: <span className="text-slate-200 font-medium">Alternative Pop</span></div>
+                    <div>YEAR: <span className="text-slate-200 font-medium">2026</span></div>
+                    <div className="text-purple-300">LISTEN ON:</div>
+                  </div>
+
+                  {/* All 6 Streaming Platform Badges */}
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-1">
+                    {STREAMING_PLATFORMS.map((platform) => (
+                      <a
+                        key={platform.name}
+                        href={platform.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`glass-card px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium text-slate-200 transition-all duration-200 hover:scale-105 shadow-sm ${platform.hoverBorder}`}
+                        title={`Dengarkan Paranoise di ${platform.name}`}
+                      >
+                        {platform.icon}
+                        <span>{platform.name}</span>
+                      </a>
+                    ))}
+                  </div>
                 </div>
+
               </div>
 
-              {/* Right Column: Vinyl / Artwork Display */}
+              {/* Right Column: Vinyl Artwork */}
               <div className="lg:col-span-5 flex justify-center">
                 <div className="relative group max-w-sm w-full">
-                  
-                  {/* Subtle ambient lighting behind vinyl */}
                   <div className="absolute inset-0 bg-purple-600/25 rounded-2xl blur-3xl group-hover:bg-purple-600/40 transition-all duration-700"></div>
 
-                  {/* Vinyl Record Disc (Pops out on hover or when playing) */}
                   <div className={`absolute top-0 right-0 w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-neutral-950 border-4 border-neutral-800 shadow-2xl flex items-center justify-center transition-all duration-700 pointer-events-none ${
                     isPlaying && currentTrack.id === "gugur" 
                       ? "translate-x-16 sm:translate-x-20 rotate-45 animate-spin-slow" 
                       : "group-hover:translate-x-12 group-hover:rotate-12"
                   }`}>
-                    {/* Vinyl Grooves */}
                     <div className="w-48 h-48 rounded-full border border-neutral-800 flex items-center justify-center">
                       <div className="w-32 h-32 rounded-full border border-neutral-800/80 flex items-center justify-center">
-                        {/* Center Vinyl Label */}
                         <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-900 to-indigo-900 p-1 flex items-center justify-center text-center">
                           <img src="assets/logo.png" alt="Paranoise Mini" className="w-12 h-12 rounded-full object-cover" />
                         </div>
@@ -634,7 +994,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                     </div>
                   </div>
 
-                  {/* Album Cover Art Card */}
                   <div className="relative z-10 rounded-2xl overflow-hidden glass-card p-3 shadow-2xl transition-transform duration-500 group-hover:-translate-y-2">
                     <div className="relative aspect-square rounded-xl overflow-hidden shadow-inner bg-brand-dark">
                       <img 
@@ -655,29 +1014,28 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
 
             </div>
 
-            {/* Scroll Indicator */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 text-xs tracking-widest uppercase">
               <span>Scroll to Explore</span>
-              <i data-lucide="chevron-down" className="w-4 h-4 animate-bounce text-purple-400"></i>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 animate-bounce text-purple-400">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
             </div>
           </section>
 
-          {/* ================= DISCOGRAPHY SECTION (4 SINGLES) ================= */}
+          {/* ================= DISCOGRAPHY SECTION ================= */}
           <section id="discography" className="py-28 px-6 relative">
             <div className="max-w-7xl mx-auto">
               
-              {/* Section Header */}
               <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
                 <p className="text-xs font-mono uppercase tracking-widest text-purple-400">Chronological Releases</p>
                 <h2 className="font-serif italic text-4xl sm:text-5xl font-bold text-white">
                   The Discography
                 </h2>
                 <p className="text-slate-400 text-sm">
-                  Four chapters of emotions, memories, and introspective soundscapes by Paranoise.
+                  Empat karya emosional oleh Kami. Klik tombol putar untuk mendengarkan lagu.
                 </p>
               </div>
 
-              {/* Singles Grid (4 Tracks) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {SINGLES_DATA.map((single) => {
                   const isCurrent = currentTrack.id === single.id;
@@ -690,7 +1048,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                         isCurrent ? "ring-2 ring-purple-500/50 shadow-xl shadow-purple-950/40" : ""
                       }`}
                     >
-                      {/* Top Badges */}
                       <div className="flex items-center justify-between mb-3 text-xs font-mono">
                         <span className="text-slate-400">{single.year}</span>
                         {single.isLatest && (
@@ -700,38 +1057,47 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                         )}
                       </div>
 
-                      {/* Cover Artwork Container */}
                       <div className="relative aspect-square rounded-xl overflow-hidden mb-4 bg-black/60 shadow-md">
                         <img 
                           src={single.cover} 
                           alt={`${single.title} Cover`}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          onError={(e) => {
-                            e.target.src = "assets/logo.png";
-                          }}
                         />
 
-                        {/* Hover Overlay with Instant Play */}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-sm">
+                        {/* Hover Overlay with instant play actions */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 backdrop-blur-sm">
                           <button
-                            onClick={() => togglePlay(single)}
+                            onClick={() => playSpecificTrack(single)}
                             className="p-3.5 rounded-full bg-purple-600 hover:bg-purple-500 text-white shadow-xl hover:scale-110 transition-transform"
-                            title="Play Preview"
+                            title="Putar Lagu"
                           >
-                            <i data-lucide={isCurrentPlaying ? "pause" : "play"} className="w-5 h-5 fill-current"></i>
+                            {isCurrentPlaying ? (
+                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                <rect x="6" y="4" width="4" height="16" rx="1" />
+                                <rect x="14" y="4" width="4" height="16" rx="1" />
+                              </svg>
+                            ) : (
+                              <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 translate-x-0.5">
+                                <polygon points="5 3 19 12 5 21 5 3" />
+                              </svg>
+                            )}
                           </button>
-                          <a
-                            href={single.spotifyUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={() => {
+                              setCurrentTrack(single);
+                              setShowSpotifyDrawer(true);
+                            }}
                             className="p-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl hover:scale-110 transition-transform"
-                            title="Open on Spotify"
+                            title="Buka Spotify Embed"
                           >
-                            <i data-lucide="music" className="w-5 h-5"></i>
-                          </a>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                              <path d="M9 18V5l12-2v13" />
+                              <circle cx="6" cy="18" r="3" />
+                              <circle cx="18" cy="16" r="3" />
+                            </svg>
+                          </button>
                         </div>
 
-                        {/* Playing Waveform Badge */}
                         {isCurrentPlaying && (
                           <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md flex items-center gap-1.5 text-[11px] text-purple-300">
                             <span className="w-1.5 h-3 bg-purple-400 animate-pulse rounded"></span>
@@ -742,7 +1108,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                         )}
                       </div>
 
-                      {/* Song Details */}
                       <div className="space-y-2 mb-4">
                         <h3 className="font-serif italic font-bold text-2xl text-white group-hover:text-purple-300 transition-colors">
                           {single.title}
@@ -752,25 +1117,34 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                         </p>
                       </div>
 
-                      {/* Card Footer Actions */}
                       <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs">
                         <button
                           onClick={() => setSelectedLyrics(single)}
-                          className="text-purple-300 hover:text-purple-200 flex items-center gap-1 transition-colors font-medium"
+                          className="text-purple-300 hover:text-purple-200 flex items-center gap-1.5 transition-colors font-medium"
                         >
-                          <i data-lucide="file-text" className="w-3.5 h-3.5"></i>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-purple-400">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                          </svg>
                           <span>Lirik</span>
                         </button>
                         
-                        <a
-                          href={single.spotifyUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={() => {
+                            setCurrentTrack(single);
+                            setShowSpotifyDrawer(true);
+                          }}
                           className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-mono transition-colors"
                         >
                           <span>Spotify</span>
-                          <i data-lucide="external-link" className="w-3 h-3"></i>
-                        </a>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                          </svg>
+                        </button>
                       </div>
 
                     </div>
@@ -778,30 +1152,47 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                 })}
               </div>
 
-              {/* Spotify Player Direct Access Banner */}
-              <div className="mt-14 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-500/20 bg-gradient-to-r from-emerald-950/20 via-brand-dark to-purple-950/20">
-                <div className="flex items-center gap-4 text-center md:text-left">
-                  <div className="p-4 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-                    <i data-lucide="headphones" className="w-7 h-7"></i>
-                  </div>
-                  <div>
-                    <h4 className="font-serif text-xl sm:text-2xl font-bold text-white">
-                      Stream Paranoise on All Major Platforms
-                    </h4>
-                    <p className="text-xs sm:text-sm text-slate-400">
-                      Tersedia di Spotify, Apple Music, YouTube Music, dan platform streaming favoritmu.
-                    </p>
+              {/* Direct Streaming Platforms Showcase Banner */}
+              <div className="mt-14 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 border border-purple-500/20 bg-gradient-to-r from-indigo-950/20 via-brand-dark to-purple-950/20">
+                <div className="space-y-2 text-center lg:text-left">
+                  <h4 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                    Listen to Paranoise Anywhere
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-400">
+                    Tersedia di semua platform streaming musik digital favorit Kamu.
+                  </p>
+                  
+                  {/* Badges in Banner */}
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-3">
+                    {STREAMING_PLATFORMS.map((platform) => (
+                      <a
+                        key={platform.name}
+                        href={platform.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`glass-card px-3 py-1.5 rounded-full flex items-center gap-2 text-xs font-medium text-slate-200 transition-all duration-200 hover:scale-105 ${platform.hoverBorder}`}
+                      >
+                        {platform.icon}
+                        <span>{platform.name}</span>
+                      </a>
+                    ))}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={() => setShowSpotifyDrawer(true)}
+                    className="px-5 py-3 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-semibold text-xs tracking-wider uppercase transition-all"
+                  >
+                    Buka Mini Player
+                  </button>
                   <a
                     href={BAND_INFO.spotifyUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-6 py-3 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs tracking-wider uppercase transition-all shadow-lg shadow-emerald-950/50 hover:scale-105"
                   >
-                    Buka Spotify Artist Profile
+                    Spotify Profile
                   </a>
                 </div>
               </div>
@@ -809,11 +1200,10 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
             </div>
           </section>
 
-          {/* ================= VISUAL ARCHIVE / GALLERY SECTION ================= */}
+          {/* ================= VISUAL ARCHIVE / GALLERY ================= */}
           <section id="gallery" className="py-28 px-6 bg-brand-dark/50 border-y border-white/5 relative">
             <div className="max-w-7xl mx-auto">
               
-              {/* Section Header */}
               <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
                 <p className="text-xs font-mono uppercase tracking-widest text-purple-400">Visual Archive</p>
                 <h2 className="font-serif italic text-4xl sm:text-5xl font-bold text-white">
@@ -824,9 +1214,8 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                 </p>
               </div>
 
-              {/* Asymmetric Gallery Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {GALLERY_ITEMS.map((item, idx) => (
+                {GALLERY_ITEMS.map((item) => (
                   <div 
                     key={item.id}
                     onClick={() => setLightboxImage(item)}
@@ -838,18 +1227,14 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                         alt={item.title} 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 filter group-hover:brightness-105"
                       />
-                      
-                      {/* Gradient Vignette & Info */}
                       <div className="absolute inset-0 bg-gradient-to-t from-brand-black via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
                       
-                      {/* Top Tag */}
                       <div className="absolute top-4 left-4">
                         <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono text-purple-300 border border-white/10">
                           {item.tag}
                         </span>
                       </div>
 
-                      {/* Bottom Info Preview */}
                       <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
                         <div>
                           <h4 className="font-serif italic text-xl font-bold text-white group-hover:text-purple-300 transition-colors">
@@ -860,7 +1245,12 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                           </p>
                         </div>
                         <div className="p-2 rounded-full glass-card text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                          <i data-lucide="maximize-2" className="w-4 h-4"></i>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                            <polyline points="15 3 21 3 21 9" />
+                            <polyline points="9 21 3 21 3 15" />
+                            <line x1="21" y1="3" x2="14" y2="10" />
+                            <line x1="3" y1="21" x2="10" y2="14" />
+                          </svg>
                         </div>
                       </div>
                     </div>
@@ -871,21 +1261,21 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
             </div>
           </section>
 
-          {/* ================= ELECTRONIC PRESS KIT (EPK) & BOOKING HUB ================= */}
+          {/* ================= EPK & BOOKING HUB ================= */}
           <section id="epk" className="py-28 px-6 relative">
             <div className="max-w-6xl mx-auto">
               
               <div className="glass-panel rounded-3xl p-8 sm:p-12 lg:p-16 border border-purple-500/20 shadow-2xl relative overflow-hidden">
-                
-                {/* Decorative background glow */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none"></div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                   
-                  {/* Left Column: EPK Overview */}
                   <div className="lg:col-span-7 space-y-6">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-mono uppercase tracking-widest border border-purple-500/30">
-                      <i data-lucide="briefcase" className="w-3.5 h-3.5"></i>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                      </svg>
                       <span>Electronic Press Kit & Inquiries</span>
                     </div>
 
@@ -897,7 +1287,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                       Siap membawa atmosfer *alternative pop* dengan perpaduan melodi dreamy, lirik emosional, dan dinamika panggung yang hidup ke festival musik, gigs kampus, showcase, atau acara kreatif Anda.
                     </p>
 
-                    {/* Band Specifications List */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10 text-xs">
                       <div>
                         <span className="block text-slate-500 font-mono">GENRE</span>
@@ -913,13 +1302,21 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                       </div>
                     </div>
 
-                    {/* EPK Action Buttons */}
                     <div className="flex flex-wrap items-center gap-4 pt-4">
                       <button
                         onClick={copyEPKInfo}
                         className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-white text-brand-black hover:bg-slate-200 font-semibold text-xs tracking-wider uppercase transition-all shadow-lg hover:scale-105"
                       >
-                        <i data-lucide={epkCopied ? "check" : "copy"} className="w-4 h-4 text-purple-700"></i>
+                        {epkCopied ? (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-emerald-600">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-purple-700">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                          </svg>
+                        )}
                         <span>{epkCopied ? "EPK Data Copied!" : "Salin Info Press Kit"}</span>
                       </button>
 
@@ -929,16 +1326,17 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                         rel="noopener noreferrer"
                         className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wider uppercase transition-all shadow-lg hover:scale-105"
                       >
-                        <i data-lucide="message-circle" className="w-4 h-4"></i>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                        </svg>
                         <span>Chat WhatsApp Manager</span>
                       </a>
                     </div>
                   </div>
 
-                  {/* Right Column: Direct Contact Cards */}
                   <div className="lg:col-span-5 space-y-4">
                     
-                    {/* Contact Card: WhatsApp */}
+                    {/* WhatsApp Card */}
                     <a 
                       href={BAND_INFO.whatsappLink} 
                       target="_blank" 
@@ -946,7 +1344,9 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                       className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-emerald-500/40 transition-all group block"
                     >
                       <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <i data-lucide="phone" className="w-5 h-5"></i>
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-emerald-400">
+                          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
                       </div>
                       <div className="overflow-hidden">
                         <p className="text-xs text-slate-400 font-mono">WhatsApp Booking</p>
@@ -956,13 +1356,16 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                       </div>
                     </a>
 
-                    {/* Contact Card: Email */}
+                    {/* Email Card */}
                     <a 
                       href={`mailto:${BAND_INFO.email}?subject=Booking%20Inquiry%20-%20Paranoise`}
                       className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-purple-500/40 transition-all group block"
                     >
                       <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <i data-lucide="mail" className="w-5 h-5"></i>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-purple-400">
+                          <rect width="20" height="16" x="2" y="4" rx="2"/>
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                        </svg>
                       </div>
                       <div className="overflow-hidden">
                         <p className="text-xs text-slate-400 font-mono">Official Email</p>
@@ -972,15 +1375,20 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                       </div>
                     </a>
 
-                    {/* Contact Card: Instagram */}
+                    {/* Instagram Card with High-Res Official Instagram Gradient/Vector */}
                     <a 
                       href={BAND_INFO.instagramLink} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="glass-card rounded-2xl p-5 flex items-center gap-4 hover:border-pink-500/40 transition-all group block"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <i data-lucide="instagram" className="w-5 h-5"></i>
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500/10 via-rose-500/10 to-purple-500/15 border border-pink-500/30 text-pink-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        {/* High-Resolution Official Instagram Camera Glyph SVG */}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-pink-400">
+                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                          <circle cx="12" cy="12" r="4"/>
+                          <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
+                        </svg>
                       </div>
                       <div className="overflow-hidden">
                         <p className="text-xs text-slate-400 font-mono">Instagram</p>
@@ -1010,30 +1418,92 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
               </div>
 
               <div>
-                © {new Date().getFullYear()} Paranoise. All Rights Reserved. Crafted with atmospheric vibes.
+                © {new Date().getFullYear()} Paranoise. All Rights Reserved.
               </div>
 
-              <div className="flex items-center gap-4">
-                <a href={BAND_INFO.spotifyUrl} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition-colors">Spotify</a>
-                <a href={BAND_INFO.instagramLink} target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">Instagram</a>
-                <a href={`mailto:${BAND_INFO.email}`} className="hover:text-purple-400 transition-colors">Email</a>
+              <div className="flex items-center gap-5">
+                <a href={BAND_INFO.spotifyUrl} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-[#1db954]"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.494 17.306c-.215.352-.676.463-1.028.248-2.812-1.718-6.352-2.107-10.52-1.155-.403.092-.806-.157-.898-.56-.092-.403.157-.806.56-.898 4.568-1.042 8.487-.597 11.638 1.337.352.215.463.676.248 1.028zm1.467-3.262c-.27.441-.852.578-1.293.308-3.218-1.978-8.125-2.55-11.932-1.393-.497.151-1.027-.132-1.178-.629-.151-.497.132-1.027.629-1.178 4.356-1.323 9.771-.684 13.466 1.599.441.27.578.852.308 1.293zm.126-3.41c-3.859-2.292-10.228-2.503-13.914-1.384-.592.179-1.22-.162-1.399-.754-.179-.592.162-1.22.754-1.399 4.237-1.287 11.272-1.037 15.719 1.603.532.316.705 1.006.389 1.538-.316.532-1.006.705-1.538.389z"/></svg>
+                  <span>Spotify</span>
+                </a>
+                <a href={BAND_INFO.instagramLink} target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-pink-400"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.8" fill="currentColor"/></svg>
+                  <span>Instagram</span>
+                </a>
+                <a href={`mailto:${BAND_INFO.email}`} className="hover:text-purple-400 transition-colors flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 text-purple-400"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  <span>Email</span>
+                </a>
               </div>
 
             </div>
           </footer>
 
-          {/* ================= PERSISTENT FLOATING AUDIO PLAYER ================= */}
+          {/* ================= EXPANDABLE SPOTIFY EMBED DRAWER ================= */}
+          {showSpotifyDrawer && (
+            <div className="fixed bottom-28 left-4 right-4 sm:left-6 sm:right-6 max-w-xl mx-auto z-50 transition-all">
+              <div className="glass-panel rounded-2xl p-4 shadow-2xl border border-emerald-500/30 bg-black/95">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="text-xs font-mono font-semibold text-emerald-400 uppercase tracking-wider">
+                      Spotify Official Player • {currentTrack.title}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={() => setShowSpotifyDrawer(false)}
+                    className="p-1 rounded-full text-slate-400 hover:text-white hover:bg-white/10"
+                    title="Tutup Player"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="rounded-xl overflow-hidden bg-black h-40">
+                  <iframe 
+                    style={{ borderRadius: '12px' }} 
+                    src={`https://open.spotify.com/embed/album/${currentTrack.spotifyAlbumId}?utm_source=generator&theme=0`} 
+                    width="100%" 
+                    height="152" 
+                    frameBorder="0" 
+                    allowFullScreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ================= FULLY INTERACTIVE FLOATING MUSIC PLAYER ================= */}
           <div className="fixed bottom-4 left-4 right-4 sm:left-6 sm:right-6 max-w-4xl mx-auto z-50">
-            <div className="glass-panel rounded-2xl p-3 sm:p-4 shadow-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="glass-panel rounded-2xl p-3 sm:p-4 shadow-2xl border border-white/10 flex flex-col md:flex-row items-center justify-between gap-3">
               
-              {/* Left: Current Track Thumbnail & Metadata */}
-              <div className="flex items-center gap-3.5 w-full sm:w-auto">
-                <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black">
-                  <img src={currentTrack.cover} alt={currentTrack.title} className="w-full h-full object-cover" />
+              {/* Left: Track Thumbnail & Title */}
+              <div className="flex items-center gap-3.5 w-full md:w-64">
+                <div 
+                  className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-black cursor-pointer group"
+                  onClick={togglePlayPause}
+                  title={isPlaying ? "Jeda" : "Putar"}
+                >
+                  <img src={currentTrack.cover} alt={currentTrack.title} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    {isPlaying ? (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                        <rect x="6" y="4" width="4" height="16" rx="1.5" />
+                        <rect x="14" y="4" width="4" height="16" rx="1.5" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 translate-x-[1px]">
+                        <polygon points="6 3 20 12 6 21 6 3" />
+                      </svg>
+                    )}
+                  </div>
                   {isPlaying && (
-                    <div className="absolute inset-0 bg-purple-950/40 backdrop-blur-[1px] flex items-center justify-center">
-                      <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
-                    </div>
+                    <div className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse border border-black"></div>
                   )}
                 </div>
 
@@ -1046,85 +1516,151 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                       {currentTrack.year}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 truncate">
-                    Paranoise • {isPlaying ? "Ambient Web Audio" : "Ready to play"}
+                  <p className="text-xs text-slate-400 truncate flex items-center gap-1.5">
+                    Paranoise • Alternative Pop
                   </p>
                 </div>
               </div>
 
-              {/* Center: Controls & Fake Audio Scrubber */}
-              <div className="flex flex-col items-center gap-1.5 w-full sm:w-80">
-                <div className="flex items-center gap-4">
-                  {/* Prev Track */}
+              {/* Center: Spotify-Style Controls with White Circle Play/Pause Button */}
+              <div className="flex flex-col items-center gap-2 w-full max-w-md">
+                
+                {/* Control Row: [Prev]  [⚪ Circle Play/Pause]  [Next] */}
+                <div className="flex items-center gap-5 sm:gap-6">
+                  
+                  {/* Tombol Mundur (Previous Song) */}
                   <button
-                    onClick={() => {
-                      const curIndex = SINGLES_DATA.findIndex(s => s.id === currentTrack.id);
-                      const prevIndex = (curIndex - 1 + SINGLES_DATA.length) % SINGLES_DATA.length;
-                      togglePlay(SINGLES_DATA[prevIndex]);
-                    }}
-                    className="text-slate-400 hover:text-white transition-colors"
-                    title="Previous Single"
+                    onClick={playPrevTrack}
+                    className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all active:scale-90"
+                    title="Lagu Sebelumnya / Ulang Dari Awal"
                   >
-                    <i data-lucide="skip-back" className="w-4 h-4"></i>
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                      <polygon points="19 20 9 12 19 4 19 20" />
+                      <rect x="5" y="4" width="2.5" height="16" rx="0.5" />
+                    </svg>
                   </button>
 
-                  {/* Play / Pause */}
+                  {/* TOMBOL PLAY / PAUSE LINGKARAN PUTIH */}
                   <button
-                    onClick={() => togglePlay()}
-                    className="p-2.5 rounded-full bg-white hover:bg-slate-200 text-brand-black transition-all hover:scale-105 shadow-md"
-                    title={isPlaying ? "Pause" : "Play"}
+                    onClick={togglePlayPause}
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white text-black flex items-center justify-center shadow-lg shadow-white/20 hover:scale-105 active:scale-95 transition-all duration-150 cursor-pointer group"
+                    title={isPlaying ? "Pause / Jeda" : "Play / Putar"}
                   >
-                    <i data-lucide={isPlaying ? "pause" : "play"} className="w-4 h-4 fill-current"></i>
+                    {isPlaying ? (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 sm:w-7 sm:h-7 text-black transition-transform group-active:scale-90">
+                        <rect x="6" y="4" width="4" height="16" rx="1.5" />
+                        <rect x="14" y="4" width="4" height="16" rx="1.5" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 sm:w-7 sm:h-7 text-black translate-x-[1.5px] transition-transform group-active:scale-90">
+                        <polygon points="6 3 20 12 6 21 6 3" />
+                      </svg>
+                    )}
                   </button>
 
-                  {/* Next Track */}
+                  {/* Tombol Maju (Next Song) */}
                   <button
-                    onClick={() => {
-                      const curIndex = SINGLES_DATA.findIndex(s => s.id === currentTrack.id);
-                      const nextIndex = (curIndex + 1) % SINGLES_DATA.length;
-                      togglePlay(SINGLES_DATA[nextIndex]);
-                    }}
-                    className="text-slate-400 hover:text-white transition-colors"
-                    title="Next Single"
+                    onClick={playNextTrack}
+                    className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-all active:scale-90"
+                    title="Lagu Berikutnya"
                   >
-                    <i data-lucide="skip-forward" className="w-4 h-4"></i>
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                      <polygon points="5 4 15 12 5 20 5 4" />
+                      <rect x="16.5" y="4" width="2.5" height="16" rx="0.5" />
+                    </svg>
                   </button>
+
                 </div>
 
-                {/* Progress Bar */}
-                <div className="w-full flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                  <span>0:{(Math.floor(playbackProgress * 0.3)).toString().padStart(2, '0')}</span>
-                  <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-purple-500 to-indigo-400 transition-all duration-300" 
-                      style={{ width: `${playbackProgress}%` }}
-                    ></div>
+                {/* Manual Draggable Scrubber */}
+                <div className="w-full flex items-center gap-3 text-[11px] font-mono text-slate-400 select-none">
+                  <span className="w-9 text-right">{formatTime(activeTime)}</span>
+                  
+                  <div className="flex-1 relative flex items-center">
+                    <input 
+                      type="range"
+                      min="0"
+                      max={duration > 0 ? duration : 100}
+                      step="0.1"
+                      value={activeTime}
+                      onChange={handleScrubberChange}
+                      onMouseDown={handleScrubberMouseDown}
+                      onMouseUp={handleScrubberMouseUp}
+                      onTouchStart={handleScrubberMouseDown}
+                      onTouchEnd={handleScrubberMouseUp}
+                      className="music-scrubber"
+                      title="Geser posisi lagu"
+                    />
                   </div>
-                  <span>{currentTrack.duration}</span>
+
+                  <span className="w-9">{duration > 0 ? formatTime(duration) : currentTrack.duration}</span>
                 </div>
+
               </div>
 
-              {/* Right: Volume & Spotify Direct */}
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                {/* Volume Button */}
-                <button 
-                  onClick={toggleMute}
-                  className="text-slate-400 hover:text-white transition-colors"
-                  title="Mute / Unmute"
+              {/* Right: Mute Button, Volume Slider & Spotify Drawer Toggle */}
+              <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+                
+                {/* Volume & Mute Controls */}
+                <div className="flex items-center gap-2 group">
+                  <button 
+                    onClick={toggleMute}
+                    className={`p-1.5 rounded-full transition-colors ${
+                      isMuted ? "text-rose-400 hover:text-rose-300 bg-rose-500/10" : "text-slate-400 hover:text-white"
+                    }`}
+                    title={isMuted ? "Unmute Audio" : "Mute Audio"}
+                  >
+                    {isMuted || volume === 0 ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
+                        <line x1="23" y1="9" x2="17" y2="15" />
+                        <line x1="17" y1="9" x2="23" y2="15" />
+                      </svg>
+                    ) : volume < 0.5 ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" />
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                      </svg>
+                    )}
+                    </button>
+
+                  {/* Volume Slider */}
+                  <input 
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="w-16 h-1 bg-white/20 rounded-full accent-purple-400 cursor-pointer hidden sm:block"
+                    title={`Volume: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
+                  />
+                </div>
+
+                {/* Spotify Drawer Toggle */}
+                <button
+                  onClick={() => setShowSpotifyDrawer(!showSpotifyDrawer)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    showSpotifyDrawer 
+                      ? "bg-emerald-500 text-black font-semibold shadow-lg shadow-emerald-950/50" 
+                      : "bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30"
+                  }`}
+                  title="Buka / Tutup Spotify Player"
                 >
-                  <i data-lucide={isMuted ? "volume-x" : "volume-2"} className="w-4 h-4"></i>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                  </svg>
+                  <span>Spotify</span>
                 </button>
 
-                {/* Direct Spotify Button */}
-                <a
-                  href={currentTrack.spotifyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-400 border border-emerald-500/30 text-xs font-medium transition-all"
-                >
-                  <i data-lucide="music" className="w-3.5 h-3.5"></i>
-                  <span>Spotify</span>
-                </a>
               </div>
 
             </div>
@@ -1132,14 +1668,23 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
 
           {/* ================= LYRICS MODAL ================= */}
           {selectedLyrics && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-              <div className="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 max-h-[85vh] overflow-y-auto border border-purple-500/30 relative shadow-2xl">
+            <div 
+              onClick={() => setSelectedLyrics(null)}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md cursor-pointer"
+            >
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                className="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 max-h-[85vh] overflow-y-auto border border-purple-500/30 relative shadow-2xl cursor-default"
+              >
                 
                 <button
                   onClick={() => setSelectedLyrics(null)}
                   className="absolute top-5 right-5 p-2 rounded-full glass-card hover:bg-white/20 text-slate-400 hover:text-white transition-colors"
                 >
-                  <i data-lucide="x" className="w-4 h-4"></i>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
                 </button>
 
                 <div className="flex items-center gap-4 mb-6">
@@ -1155,15 +1700,21 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                 </div>
 
                 <div className="mt-6 flex justify-between items-center text-xs">
-                  <a
-                    href={selectedLyrics.spotifyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => {
+                      setCurrentTrack(selectedLyrics);
+                      setShowSpotifyDrawer(true);
+                      setSelectedLyrics(null);
+                    }}
                     className="text-emerald-400 hover:underline flex items-center gap-1"
                   >
                     <span>Dengarkan di Spotify</span>
-                    <i data-lucide="external-link" className="w-3 h-3"></i>
-                  </a>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                  </button>
                   <button
                     onClick={() => setSelectedLyrics(null)}
                     className="px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-500 text-white font-medium transition-colors"
@@ -1192,7 +1743,10 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                     onClick={() => setLightboxImage(null)}
                     className="absolute top-4 right-4 p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white transition-colors border border-white/10"
                   >
-                    <i data-lucide="x" className="w-5 h-5"></i>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
                   </button>
                 </div>
                 <div className="p-6 bg-brand-dark flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1206,7 +1760,11 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
                     download 
                     className="px-4 py-2 rounded-full glass-card hover:bg-white/10 text-xs font-mono text-slate-200 shrink-0 flex items-center gap-1.5"
                   >
-                    <i data-lucide="download" className="w-3.5 h-3.5"></i>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
                     <span>Simpan Foto</span>
                   </a>
                 </div>
@@ -1218,7 +1776,6 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
       );
     }
 
-    // Render the React App
     ReactDOM.createRoot(document.getElementById('root')).render(<ParanoiseApp />);
   </script>
 </body>
