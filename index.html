@@ -573,7 +573,42 @@ Salahkah bilaku mencintai dirimu`
         return `${m}:${s.toString().padStart(2, '0')}`;
       };
 
-      // Load & Play local MP3 directly with Mobile Optimization & Android MediaSession
+      // Touch/Tap debounce to prevent double-firing on mobile touchscreens
+      const lastTapRef = useRef(0);
+      const checkTapDebounce = () => {
+        const now = Date.now();
+        if (now - lastTapRef.current < 350) {
+          return true; // Ignore rapid double-fire
+        }
+        lastTapRef.current = now;
+        return false;
+      };
+
+      // Android Notification & Lock Screen Media Session helper
+      const updateMediaSession = (track) => {
+        if ('mediaSession' in navigator) {
+          try {
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title: track.title,
+              artist: 'Paranoise',
+              album: 'Alternative Pop',
+              artwork: [
+                { src: track.cover, sizes: '512x512', type: 'image/jpeg' }
+              ]
+            });
+            navigator.mediaSession.setActionHandler('play', () => {
+              if (audioRef.current) audioRef.current.play().catch(() => {});
+            });
+            navigator.mediaSession.setActionHandler('pause', () => {
+              if (audioRef.current) audioRef.current.pause();
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', () => playPrevTrack());
+            navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
+          } catch (e) {}
+        }
+      };
+
+      // Load & Play local MP3 directly with Mobile Optimization
       const executePlayTrack = (track, shouldAutoplay = true) => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -582,54 +617,38 @@ Salahkah bilaku mencintai dirimu`
           setIsPlayerVisible(true);
         }
 
-        const target = `assets/audio/${track.id}.mp3`;
-        if (audio.src !== window.location.origin + '/' + target && !audio.src.endsWith(target)) {
-          audio.src = target;
+        const targetSrc = `assets/audio/${track.id}.mp3`;
+        const currentSrc = audio.getAttribute('src') || audio.src || '';
+
+        // Only reload source if it actually changed
+        if (!currentSrc.includes(targetSrc)) {
+          audio.src = targetSrc;
+          audio.load();
         }
 
         if (shouldAutoplay) {
-          audio.preload = "auto";
           const playPromise = audio.play();
           if (playPromise !== undefined) {
             playPromise
               .then(() => {
                 setIsPlaying(true);
-                setIsPlayerVisible(true);
-
-                // Android Notification & Lock Screen Media Session
-                if ('mediaSession' in navigator) {
-                  try {
-                    navigator.mediaSession.metadata = new MediaMetadata({
-                      title: track.title,
-                      artist: 'Paranoise',
-                      album: 'Alternative Pop',
-                      artwork: [
-                        { src: track.cover, sizes: '512x512', type: 'image/jpeg' }
-                      ]
-                    });
-                    navigator.mediaSession.setActionHandler('play', () => {
-                      if (audioRef.current) audioRef.current.play();
-                    });
-                    navigator.mediaSession.setActionHandler('pause', () => {
-                      if (audioRef.current) audioRef.current.pause();
-                    });
-                    navigator.mediaSession.setActionHandler('previoustrack', () => playPrevTrack());
-                    navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
-                  } catch (e) {}
-                }
+                updateMediaSession(track);
               })
               .catch((err) => {
                 if (err && err.name === "AbortError") return;
-                console.warn("Play audio failed:", err);
+                console.warn("Audio play rejected:", err);
                 setIsPlaying(false);
               });
           }
         }
       };
 
-      // Initialize audio on mount (preload only, no autoplay)
+      // Initialize audio on mount safely without blocking mobile autoplay
       useEffect(() => {
-        executePlayTrack(SINGLES_DATA[0], false);
+        const audio = audioRef.current;
+        if (audio) {
+          audio.src = `assets/audio/${SINGLES_DATA[0].id}.mp3`;
+        }
       }, []);
 
       // Tutup / Sembunyikan Player Bar
@@ -644,25 +663,33 @@ Salahkah bilaku mencintai dirimu`
 
       // 1. PRIMARY PLAY / PAUSE TOGGLE
       const togglePlayPause = () => {
+        if (checkTapDebounce()) return;
         const audio = audioRef.current;
         if (!audio) return;
 
-        if (isPlaying) {
+        setIsPlayerVisible(true);
+
+        if (!audio.paused && isPlaying) {
           audio.pause();
           setIsPlaying(false);
         } else {
-          setIsPlayerVisible(true);
-          if (!audio.src || audio.src.endsWith('/') || audio.networkState === 3) {
-            executePlayTrack(currentTrack, true);
-          } else {
-            audio.play()
+          const targetSrc = `assets/audio/${currentTrack.id}.mp3`;
+          const currentSrc = audio.getAttribute('src') || audio.src || '';
+          if (!currentSrc.includes(targetSrc)) {
+            audio.src = targetSrc;
+            audio.load();
+          }
+          const playPromise = audio.play();
+          if (playPromise !== undefined) {
+            playPromise
               .then(() => {
                 setIsPlaying(true);
-                setIsPlayerVisible(true);
+                updateMediaSession(currentTrack);
               })
               .catch((err) => {
-                console.warn("Direct play failed, trying fallback:", err);
-                executePlayTrack(currentTrack, true);
+                if (err && err.name === "AbortError") return;
+                console.warn("Direct play failed:", err);
+                setIsPlaying(false);
               });
           }
         }
@@ -670,17 +697,18 @@ Salahkah bilaku mencintai dirimu`
 
       // 2. NEXT TRACK
       const playNextTrack = () => {
+        if (checkTapDebounce()) return;
         setIsPlayerVisible(true);
         const curIndex = SINGLES_DATA.findIndex(s => s.id === currentTrack.id);
         const nextIndex = (curIndex + 1) % SINGLES_DATA.length;
         const nextTrack = SINGLES_DATA[nextIndex];
         setCurrentTrack(nextTrack);
-        setIsPlaying(true);
         executePlayTrack(nextTrack, true);
       };
 
       // 3. PREVIOUS TRACK
       const playPrevTrack = () => {
+        if (checkTapDebounce()) return;
         setIsPlayerVisible(true);
         const audio = audioRef.current;
         if (audio && audio.currentTime > 3) {
@@ -692,18 +720,17 @@ Salahkah bilaku mencintai dirimu`
         const prevIndex = (curIndex - 1 + SINGLES_DATA.length) % SINGLES_DATA.length;
         const prevTrack = SINGLES_DATA[prevIndex];
         setCurrentTrack(prevTrack);
-        setIsPlaying(true);
         executePlayTrack(prevTrack, true);
       };
 
       // 4. PLAY SPECIFIC TRACK
       const playSpecificTrack = (track) => {
+        if (checkTapDebounce()) return;
         setIsPlayerVisible(true);
         if (currentTrack.id === track.id) {
           togglePlayPause();
         } else {
           setCurrentTrack(track);
-          setIsPlaying(true);
           executePlayTrack(track, true);
         }
       };
@@ -823,11 +850,16 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
           <audio 
             ref={audioRef}
             playsInline
+            preload="metadata"
             onTimeUpdate={handleAudioTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
             onEnded={handleAudioEnded}
-            preload="auto"
+            onError={(e) => {
+              console.warn("Audio error:", e);
+              setIsPlaying(false);
+            }}
           />
 
           {/* ================= NAVBAR ================= */}
@@ -1087,15 +1119,15 @@ Spotify: https://open.spotify.com/artist/6pD26dt90NPyn282mBqcA3`;
 
                         {/* Play button: easily accessible on mobile, centered on desktop hover */}
                         <div 
-                          onClick={() => playSpecificTrack(single)}
-                          className="absolute inset-0 bg-black/20 sm:bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end sm:items-center justify-end sm:justify-center p-3 sm:p-0 cursor-pointer"
+                          className="absolute inset-0 bg-black/20 sm:bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end sm:items-center justify-end sm:justify-center p-3 sm:p-0 pointer-events-none"
                         >
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               playSpecificTrack(single);
                             }}
-                            className="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white text-black hover:scale-110 active:scale-95 shadow-xl flex items-center justify-center transition-all duration-200 cursor-pointer"
+                            className="pointer-events-auto w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white text-black hover:scale-110 active:scale-95 shadow-xl flex items-center justify-center transition-all duration-200 cursor-pointer"
                             title={isCurrentPlaying ? "Jeda Lagu" : "Putar Lagu"}
                           >
                             {isCurrentPlaying ? (
